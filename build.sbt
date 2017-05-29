@@ -1,3 +1,5 @@
+import swaggerboot.playversion.SupportedPlayVersion
+
 name := "play-basic"
 
 organization := "markland"
@@ -36,7 +38,7 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code" // Warn when dead code is identified.
 )
 
-val MacwireVersion        = "2.2.2"
+val MacwireVersion = "2.2.3"
 
 libraryDependencies ++= Seq(
   ws,
@@ -44,19 +46,22 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.2.2",
   "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
   "com.softwaremill.macwire" %% "util" % MacwireVersion,
-  "com.softwaremill.macwire" %% "proxy" % MacwireVersion
+  "com.softwaremill.macwire" %% "proxy" % MacwireVersion,
+  "com.typesafe.play" %% "play-datacommons" % "2.5.10"
 )
 
 fork in run := true
 
 // Swagger boostrap settings
 swaggerSourceDirectory := new File("swagger")
+swaggerAutoUpdateSwaggerJson := Some("public/swagger.json")
 swaggerServiceSpecName := Some("api.yaml")
-swaggerGenerateControllerStubs := true
+swaggerGenerateControllerStubs := false
 swaggerGenerateClient := true
-swaggerUpdatePlayRoutes := true
+swaggerUpdatePlayRoutes := false
 swaggerEnumVendorExtensionName := Some("x-extensible-enum")
-swaggerTaggedAttributes := Seq()
+swaggerTaggedAttributes := Seq("label", "connectives", "md5")
+swaggerPlayVersion := SupportedPlayVersion.Play25
 
 routesGenerator := InjectedRoutesGenerator
 routesImport := Seq(
