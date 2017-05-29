@@ -17,7 +17,7 @@ scalacOptions ++= Seq(
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning)
+  .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning, DockerPlugin)
 
 git.useGitDescribe := true
 
