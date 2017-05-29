@@ -1,0 +1,11 @@
+logs
+.DS_Store
+**/.idea/
+**/build/
+**/node_modules/
+**/target/
+__pycache__
+*.swp
+**/public/lib
+scm-source.json
+.java-version

@@ -1,0 +1,36 @@
+swagger: '2.0'
+info:
+  title: Play Basic
+  description: |
+    Storage of the Stuff
+  version: '0.1'
+  contact:
+      name: Mark Kelly
+      email: mkelly28@tcd.ie
+externalDocs:
+  description: "Github repo"
+  url: "https://github.com/marky-mark/"
+
+basePath: /api
+schemes:
+  - https
+security:
+  - oauth2: [uid]
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: password
+    authorizationUrl: https://auth.zalando.com
+    scopes:
+      uid: Unique identifier of the user accessing the service
+
+produces:
+  - application/json
+
+paths:
+
+
+parameters:
+
+
+definitions:
