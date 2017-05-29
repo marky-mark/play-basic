@@ -63,6 +63,14 @@ swaggerEnumVendorExtensionName := Some("x-extensible-enum")
 swaggerTaggedAttributes := Seq("label", "connectives", "md5")
 swaggerPlayVersion := SupportedPlayVersion.Play25
 
+//Docker stuff:
+maintainer in Docker := "mkelly28@tcd.ie"
+dockerBaseImage := "registry.opensource.zalan.do/stups/openjdk:8u91-b14-1-22"
+dockerRepository in Docker := Some("pierone.stups.zalan.do/setanta")
+dockerExposedPorts in Docker := Seq(9000)
+dockerExposedVolumes in Docker := Seq("/opt/docker/logs")
+daemonUser in Docker := "root"
+
 routesGenerator := InjectedRoutesGenerator
 routesImport := Seq(
   "api.service.binders._",
