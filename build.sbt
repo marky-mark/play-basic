@@ -47,7 +47,9 @@ libraryDependencies ++= Seq(
   "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
   "com.softwaremill.macwire" %% "util" % MacwireVersion,
   "com.softwaremill.macwire" %% "proxy" % MacwireVersion,
-  "com.typesafe.play" %% "play-datacommons" % "2.5.10"
+  "com.typesafe.play" %% "play-datacommons" % "2.5.10",
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+  "org.mockito" % "mockito-core" % "2.3.7" % "test"
 )
 
 fork in run := true
