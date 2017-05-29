@@ -1,8 +1,5 @@
 package controllers
 
-import java.util.UUID
-
-import api.common.Id._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
