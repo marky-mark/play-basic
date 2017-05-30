@@ -1,4 +1,4 @@
-package metrics
+package config
 
 import java.time.Duration
 import java.util.concurrent.TimeUnit
