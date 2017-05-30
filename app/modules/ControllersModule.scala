@@ -6,11 +6,12 @@ import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import com.softwaremill.macwire._
 import controllers._
+import filters.MetricsFilter
 import play.api.Environment
 
 import scala.concurrent.ExecutionContext
 
-trait ControllersModule { self: ServiceModule =>
+trait ControllersModule { self: ServiceModule with MetricsModule =>
 
   def environment: Environment
 
@@ -22,6 +23,9 @@ trait ControllersModule { self: ServiceModule =>
 
   private implicit lazy val mat: Materializer = ActorMaterializer()
 
+  lazy val metricsFilter = wire[MetricsFilter]
+
   lazy val health = wire[HealthCheck]
+  lazy val metrics = wire[Metrics]
 
 }

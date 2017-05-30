@@ -4,6 +4,7 @@ import modules._
 import router.Routes
 import play.api.ApplicationLoader.Context
 import play.api._
+import play.api.mvc.EssentialFilter
 import play.api.routing.Router
 
 import scala.concurrent.ExecutionContext
@@ -17,6 +18,7 @@ class AppLoader extends ApplicationLoader {
 
 trait ApplicationModules extends BuiltInComponents
   with ServiceModule
+  with MetricsModule
   with ControllersModule {
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
@@ -25,5 +27,8 @@ trait ApplicationModules extends BuiltInComponents
   lazy val default: Default = wire[Default]
   lazy val assets: Assets = wire[Assets]
   lazy val router: Router = wire[Routes]
+
+  override lazy val httpFilters: Seq[EssentialFilter] = Seq(metricsFilter)
+  metricsPlugin.start()
 
 }

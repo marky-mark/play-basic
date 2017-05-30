@@ -42,6 +42,11 @@ val MacwireVersion = "2.2.3"
 
 libraryDependencies ++= Seq(
   ws,
+  "nl.grons"                  %% "metrics-scala"                % "3.5.5_a2.3",
+  "io.dropwizard.metrics"     %  "metrics-json"                 % "3.1.2",
+  "io.dropwizard.metrics"     %  "metrics-jvm"                  % "3.1.2",
+  "io.dropwizard.metrics"     %  "metrics-logback"              % "3.1.2",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
   "org.webjars" % "swagger-ui" % "2.2.5",
   "org.scalaz" %% "scalaz-core" % "7.2.2",
   "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
