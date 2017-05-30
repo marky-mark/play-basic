@@ -13,7 +13,7 @@ import scala.util.Success
 object Metrics {
 }
 
-class MetricsFilter(metricsService: MetricsService) (implicit ec: ExecutionContext, val mat: Materializer) extends Filter with DefaultInstrumented {
+class MetricsFilter(metricsService: MetricsService)(implicit ec: ExecutionContext, val mat: Materializer) extends Filter with DefaultInstrumented {
 
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     val method = requestHeader.tags.get(play.api.routing.Router.Tags.RouteActionMethod)

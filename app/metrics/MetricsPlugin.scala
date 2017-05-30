@@ -52,7 +52,7 @@ class MetricsPlugin(metricsConfig: MetricsConfig) extends DefaultInstrumented {
         case (name, fun) =>
           conf.get(name).foreach { cfg =>
             if (cfg.enabled) {
-              fun(cfg.config, metricRegistry)()
+              fun(cfg.config, registry)()
             }
           }
       }
