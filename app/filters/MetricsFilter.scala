@@ -13,6 +13,11 @@ import scala.util.Success
 object Metrics {
 }
 
+/*
+Based off...kenshoo play metrics (uses java injects so can't use here, got some more ways to auto record requests)
+https://github.com/kenshoo/metrics-play/blob/master/src/main/scala/com/kenshoo/play/metrics/MetricsFilter.scala
+ */
+
 class MetricsFilter(metricsService: MetricsService)(implicit ec: ExecutionContext, val mat: Materializer) extends Filter with DefaultInstrumented {
 
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
