@@ -21,14 +21,14 @@ class DataModel(val driver: ExtendedPostgresDriver) {
   case class InfoTable(tag: Tag) extends Table[Info](tag, "info") {
     def id = column[UUID]("id")
     def name = column[String]("name")
-    def definition = column[JsValue]("data")
-    def linked = column[List[String]]("meta")
+    def data = column[JsValue]("data")
+    def meta = column[List[String]]("meta")
     def lastModified = column[Timestamp]("last_modified")
     def salesChannelId = column[UUID]("sales_channel_id")
 
     def pk = primaryKey("info_pkey", id)
     def fk = foreignKey("info_fkey", salesChannelId, salesChannels)(_.id, onDelete = ForeignKeyAction.Cascade)
-    def * = (id, name, definition, linked, lastModified, salesChannelId) <> (Info.tupled, Info.unapply _)
+    def * = (id, name, data, meta, lastModified, salesChannelId) <> (Info.tupled, Info.unapply _)
   }
 
   case class SalesChannelsTable (tag: Tag) extends Table[SalesChannels](tag, "sales_channels") {

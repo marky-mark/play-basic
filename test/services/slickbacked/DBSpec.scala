@@ -22,6 +22,6 @@ trait DBSpec extends FlatSpec
   val salesChannelRepository = new SalesChannelRepositoryImpl(databaseProvider)
   val infoRepository = new InfoRepositoryImpl(databaseProvider)
 
-  val baseSalesChannelId: UUID = UUID.fromString("F23E89E7-4162-432D-A7B0-F00181CF76FE")
+  val baseSalesChannelId: UUID = UUID.fromString("75506ce9-ece6-4835-bbb1-83613c326be7")
 
 }

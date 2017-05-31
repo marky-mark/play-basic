@@ -10,7 +10,7 @@ class SalesChannelRepositorySpec extends DBSpec {
 
   "SalesChannelRepository" should "return None if a sales channel record does not exist" in {
 
-    val sc = salesChannelRepository.exists(baseSalesChannelId)
+    val sc = salesChannelRepository.exists(UUID.fromString("F23E89E7-4162-432D-A7B0-F00181CF76FE"))
     sc.futureValue should === (None)
   }
 

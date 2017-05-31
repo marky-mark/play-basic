@@ -1,68 +1,82 @@
 package services.slickbacked
 
+import java.sql.Timestamp
+import java.util.UUID
+
+import org.joda.time.{DateTime, DateTimeZone}
+import play.api.libs.json.{JsObject, Json}
+
+import scala.concurrent.Await
+
 class InfoRepositorySpec extends DBSpec {
-//
-//  it should "save an info record into the database" in {
-//
-//    val expectedRuleId = UUID.randomUUID()
-//
-//    val result = info.insert(salesChannel, expectedRuleId, ruleWithSideEffect1.copy(id = None))
-//    result.futureValue should === (expectedRuleId)
-//
-//    val allRules = rulesRepository.list(salesChannel).futureValue
-//
-//    allRules.size should === (1)
-//    allRules.head should === (ruleWithSideEffect1.copy(id = Some(expectedRuleId.toString.id[RuleWithSideEffects])))
-//  }
-//
-//
-//  it should "update a rule in the database" in {
-//
-//    insertSalesChannelRecord
-//
-//    val insert1 = rulesRepository.insert(salesChannel, UUID.fromString(ruleId1.value), ruleWithSideEffect1)
-//    Await.ready(insert1, waitDuration)
-//
-//    val insert2 = rulesRepository.insert(salesChannel, UUID.fromString(ruleId2.value), ruleWithSideEffect2)
-//    Await.ready(insert2, waitDuration)
-//
-//    val update = rulesRepository.update(salesChannel, ruleId2, rule2Updated)
-//    Await.ready(update, waitDuration)
-//
-//    val rules = rulesRepository.list(salesChannel).futureValue
-//    rules.size should ===(2)
-//
-//    rules.contains(ruleWithSideEffect1) should ===(true)
-//    rules.contains(ruleWithSideEffect2Updated) should ===(true)
-//  }
-//
-//  it should "return last modified date" in {
-//
-//    val date1 = new DateTime(2017, 5, 1, 12, 20, DateTimeZone.UTC)
-//    val date2 = new DateTime(2016, 5, 1, 12, 20, DateTimeZone.UTC)
-//    val date3 = new DateTime(2015, 5, 1, 12, 20, DateTimeZone.UTC)
-//
-//    val rule1 = dataModel.Rule(id = UUID.randomUUID,
-//                                   name = "rule1",
-//                                   definition =Json.toJson(exp1),
-//                                   linked = List.empty,
-//                                   lastModified = new Timestamp(date1.getMillis),
-//                                   salesChannelId = salesChannel.value,
-//                                   rulesSourceId = sourceId.value)
-//
-//    val rule2 = rule1.copy(id = UUID.randomUUID, lastModified = new Timestamp(date2.getMillis))
-//    val rule3 = rule1.copy(id = UUID.randomUUID, lastModified = new Timestamp(date3.getMillis))
-//
-//    val rules = Seq(rule1, rule2, rule3)
-//
-//    insertSalesChannelRecord
-//    val insertResult = db.run(DBIO.sequence(rules.map(r => dataModel.rules += r))).futureValue
-//
-//    insertResult.sum should === (3)
-//
-//    val lastModifiedDate = rulesRepository.getLastModifiedDate(salesChannel).futureValue
-//    lastModifiedDate should === (Some(date1))
-//
-//  }
+
+  import dataModel.driver.api._
+
+  def dataJson = Json.parse(
+    s"""
+       |{
+       |   "foo": "bar"
+       |
+       |}
+    """.stripMargin
+  )
+
+  it should "save an info record into the database" in {
+
+    val expectedId = UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220")
+
+    val info = Info(id = expectedId, name = "foo", data = dataJson.as[JsObject], meta = List("foo", "bar"), lastModified = getCurrentTimeStamp, salesChannelId = baseSalesChannelId)
+
+    val result = infoRepository.insert(info)
+    result.futureValue should ===(expectedId)
+
+    val allInfos = infoRepository.list(baseSalesChannelId).futureValue
+
+    allInfos.size should ===(1)
+    allInfos.head should ===(info)
+  }
+
+  it should "update info record in the database" in {
+
+    val expectedId1 = UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220")
+    val info1 = Info(expectedId1, "foo", dataJson.as[JsObject], List("foo", "bar"), getCurrentTimeStamp, baseSalesChannelId)
+    val insert1 = infoRepository.insert(info1)
+    Await.ready(insert1, waitDuration)
+
+    val expectedId2 = UUID.fromString("2A41F667-F9C9-4F79-A46F-A0758D1E0672")
+    val info2 = Info(expectedId2, "bar", dataJson.as[JsObject], List("foo", "bar", "zoo"), getCurrentTimeStamp, baseSalesChannelId)
+    val insert2 = infoRepository.insert(info2)
+    Await.ready(insert2, waitDuration)
+
+    val info1Updated = info1.copy(meta = List("replaced"), lastModified = getCurrentTimeStamp)
+    val update = infoRepository.update(info1Updated)
+    Await.ready(update, waitDuration)
+
+    val infos = infoRepository.list(baseSalesChannelId).futureValue
+    infos.size should ===(2)
+
+    infos.filter(_.id == expectedId1).head should ===(info1Updated)
+  }
+
+  private def getCurrentTimeStamp: Timestamp = new Timestamp(new DateTime(DateTimeZone.UTC).getMillis)
+
+  it should "return last modified date" in {
+
+    val date1 = new DateTime(2017, 5, 1, 12, 20, DateTimeZone.UTC)
+    val date2 = new DateTime(2016, 5, 1, 12, 20, DateTimeZone.UTC)
+    val date3 = new DateTime(2015, 5, 1, 12, 20, DateTimeZone.UTC)
+
+    val info1 = Info(UUID.randomUUID(), "foo", dataJson.as[JsObject], List("foo", "bar"), new Timestamp(date1.getMillis), baseSalesChannelId)
+    val info2 = info1.copy(id = UUID.randomUUID, lastModified = new Timestamp(date2.getMillis))
+    val info3 = info1.copy(id = UUID.randomUUID, lastModified = new Timestamp(date3.getMillis))
+
+    val rules = Seq(info1, info2, info3)
+    val insertResult = db.run(DBIO.sequence(rules.map(i => dataModel.info += i))).futureValue
+    insertResult.sum should ===(3)
+
+    val lastModifiedDate = infoRepository.getLastModifiedDate(baseSalesChannelId).futureValue
+    lastModifiedDate should ===(Some(date1))
+
+  }
 
 }
