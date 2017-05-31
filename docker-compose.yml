@@ -1,0 +1,9 @@
+postgres:
+  container_name: "pg-it-test"
+  image: postgres:9.4.4
+  environment:
+    - POSTGRES_USER=playbasic
+    - POSTGRES_PASSWORD=test
+    - POSTGRES_DB=playbasic
+  ports:
+    - "5432:5432"

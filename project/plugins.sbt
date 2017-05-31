@@ -11,3 +11,5 @@ addSbtPlugin("de.zalando.buffalo" % "swagger-bootstrapper" % "0.4.0")
 addSbtPlugin("ie.zalando.buffalo" % "sbt-scm-source" % "0.0.5")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.5")
+
+addSbtPlugin("com.tapad" % "sbt-docker-compose" % "1.0.22")

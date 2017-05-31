@@ -1,4 +1,5 @@
 import swaggerboot.playversion.SupportedPlayVersion
+import java.io.File
 
 name := "play-basic"
 
@@ -17,7 +18,7 @@ scalacOptions ++= Seq(
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning, DockerPlugin)
+  .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
 
 git.useGitDescribe := true
 
@@ -46,15 +47,26 @@ libraryDependencies ++= Seq(
   "io.dropwizard.metrics"     %  "metrics-json"                 % "3.1.2",
   "io.dropwizard.metrics"     %  "metrics-jvm"                  % "3.1.2",
   "io.dropwizard.metrics"     %  "metrics-logback"              % "3.1.2",
+
+  "com.typesafe.slick" %% "slick" % "3.2.0",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.2.0",
+  "com.github.tminglei" % "slick-pg_2.11" % "0.15.0-RC",
+  "com.github.tminglei" %% "slick-pg_play-json" % "0.15.0-RC" excludeAll ExclusionRule(organization = "com.typesafe.play"),
+  "com.github.tminglei" % "slick-pg_date2_2.11" % "0.15.0-M2",
+
   "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
   "org.webjars" % "swagger-ui" % "2.2.5",
   "org.scalaz" %% "scalaz-core" % "7.2.2",
+
   "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
   "com.softwaremill.macwire" %% "util" % MacwireVersion,
   "com.softwaremill.macwire" %% "proxy" % MacwireVersion,
+
   "com.typesafe.play" %% "play-datacommons" % "2.5.10",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "org.mockito" % "mockito-core" % "2.3.7" % "test"
+  "org.mockito" % "mockito-core" % "2.3.7" % "test",
+  "com.h2database" % "h2" % "1.4.187" % "test",
+  "org.flywaydb" %% "flyway-play" % "3.0.1" % "test"
 )
 
 fork in run := true

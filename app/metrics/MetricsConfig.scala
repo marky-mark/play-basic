@@ -1,7 +1,7 @@
 package metrics
 
 import com.typesafe.config.{Config, ConfigFactory}
-import config.ConfigUtils._
+import config.ConfigGetOpt
 
 case class MetricsConfig (
   name: String,
