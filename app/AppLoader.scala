@@ -19,6 +19,7 @@ class AppLoader extends ApplicationLoader {
 trait ApplicationModules extends BuiltInComponents
   with ServiceModule
   with MetricsModule
+  with SlickBackedModule
   with ControllersModule {
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global

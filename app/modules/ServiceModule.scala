@@ -5,5 +5,4 @@ import play.api.Configuration
 trait ServiceModule {
   def configuration: Configuration
 
-
 }
