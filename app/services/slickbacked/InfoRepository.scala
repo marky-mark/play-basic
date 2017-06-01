@@ -2,6 +2,7 @@ package services.slickbacked
 
 import java.util.UUID
 
+import com.typesafe.scalalogging.LazyLogging
 import metrics.MetricsService
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.Json
@@ -11,14 +12,14 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InfoRepository {
   def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]]
 
-  def insert(info: Info)(implicit ec: ExecutionContext): Future[UUID]
+  def insert(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
 
-class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsService) extends InfoRepository {
+class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsService) extends InfoRepository with LazyLogging {
 
   private val db = dbProvider.database
   private val dm = dbProvider.dataModel
@@ -33,15 +34,17 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     db.run(info.result)
   }
 
-  override def insert(info: Info)(implicit ec: ExecutionContext): Future[UUID] = {
+  override def insert(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
 
     val insertInfo = (dm.info returning dm.info.map(_.id) into ((item, id) => item.copy(id = id))) += info
 
     val action = for {
       i <- insertInfo
-    } yield i.id
+    } yield Some(i.id)
 
-    db.run (action.transactionally)
+    db.run (action.transactionally).recover {
+      case e: Exception => logger.error("Error caught", e); None
+    }
   }
 
   override def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
