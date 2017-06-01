@@ -10,11 +10,11 @@ import play.api.libs.json.Json
 import scala.concurrent.{ExecutionContext, Future}
 
 trait InfoRepository {
-  def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]]
+  def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]]
 
-  def insert(info: Info)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
+  def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
 
-  def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
+  def update(info: InfoSlick)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
@@ -26,7 +26,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
 
   import dm.driver.api._
 
-  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.timer") {
+  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.timer") {
     val info = for {
       i <- dm.info if i.salesChannelId === salesChannelId
     } yield i
@@ -34,7 +34,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     db.run(info.result)
   }
 
-  override def insert(info: Info)(implicit ec: ExecutionContext): Future[Either[String,UUID]] = {
+  override def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String,UUID]] = {
 
     val insertInfo = (dm.info returning dm.info.map(_.id) into ((item, id) => item.copy(id = id))) += info
 
@@ -47,7 +47,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     }
   }
 
-  override def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
+  override def update(info: InfoSlick)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
     db.run(dm.info.filter(_.salesChannelId === info.salesChannelId)
       .filter(_.id === info.id)
       .map(i => (i.name, i.data, i.meta, i.lastModified))

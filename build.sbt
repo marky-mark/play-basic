@@ -94,6 +94,6 @@ routesGenerator := InjectedRoutesGenerator
 routesImport := Seq(
   "api.service.binders._",
   "api.service.models._",
-  "api.service.tags.{ids => svcids}",
+  "api.service.tags.ids",
   "api.common.IdBindables._"
 )

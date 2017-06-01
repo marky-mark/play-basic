@@ -16,7 +16,7 @@ class SalesChannelRepositorySpec extends DBSpec {
 
   it should "return sales channel id if its record exists" in {
     val salesChannel: UUID = UUID.fromString("75506ce9-ece6-4835-bbb1-83613c326be7")
-    val insert = dataModel.salesChannels += SalesChannels(salesChannel, "test")
+    val insert = dataModel.salesChannels += SalesChannelsSlick(salesChannel, "test")
     Await.ready(db.run(insert), waitDuration)
 
     val sc = salesChannelRepository.exists(salesChannel)

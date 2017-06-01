@@ -5,20 +5,20 @@ import java.util.UUID
 
 import play.api.libs.json.JsValue
 
-case class SalesChannels(salesChannelId: UUID, name: String)
+case class SalesChannelsSlick(salesChannelId: UUID, name: String)
 
-case class Info(id: UUID,
-                name: String,
-                data: JsValue,
-                meta: List[String],
-                lastModified: Timestamp,
-                salesChannelId: UUID)
+case class InfoSlick(id: UUID,
+                     name: String,
+                     data: JsValue,
+                     meta: List[String],
+                     lastModified: Timestamp,
+                     salesChannelId: UUID)
 
 class DataModel(val driver: ExtendedPostgresDriver) {
 
   import driver.api._
 
-  case class InfoTable(tag: Tag) extends Table[Info](tag, "info") {
+  case class InfoTable(tag: Tag) extends Table[InfoSlick](tag, "info") {
     def id = column[UUID]("id")
     def name = column[String]("name")
     def data = column[JsValue]("data")
@@ -28,13 +28,13 @@ class DataModel(val driver: ExtendedPostgresDriver) {
 
     def pk = primaryKey("info_pkey", id)
     def fk = foreignKey("info_fkey", salesChannelId, salesChannels)(_.id, onDelete = ForeignKeyAction.Cascade)
-    def * = (id, name, data, meta, lastModified, salesChannelId) <> (Info.tupled, Info.unapply _)
+    def * = (id, name, data, meta, lastModified, salesChannelId) <> (InfoSlick.tupled, InfoSlick.unapply _)
   }
 
-  case class SalesChannelsTable (tag: Tag) extends Table[SalesChannels](tag, "sales_channels") {
+  case class SalesChannelsTable (tag: Tag) extends Table[SalesChannelsSlick](tag, "sales_channels") {
     def id = column[UUID]("id", O.PrimaryKey)
     def name = column[String]("name")
-    def * = (id, name) <> (SalesChannels.tupled, SalesChannels.unapply)
+    def * = (id, name) <> (SalesChannelsSlick.tupled, SalesChannelsSlick.unapply)
   }
 
   lazy val info = TableQuery[InfoTable]

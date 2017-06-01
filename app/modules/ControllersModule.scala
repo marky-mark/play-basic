@@ -11,7 +11,7 @@ import play.api.Environment
 
 import scala.concurrent.ExecutionContext
 
-trait ControllersModule { self: ServiceModule with MetricsModule =>
+trait ControllersModule { self: ServiceModule with MetricsModule with SlickBackedModule =>
 
   def environment: Environment
 
@@ -27,5 +27,7 @@ trait ControllersModule { self: ServiceModule with MetricsModule =>
 
   lazy val health = wire[HealthCheck]
   lazy val metrics = wire[Metrics]
+
+  lazy val info = wire[Infos]
 
 }
