@@ -26,7 +26,7 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
   def list(salesChannelId: ids.SalesChannelId) = Action.async { implicit request =>
     val response = for {
       lastModified      <- infoService.getLastModifiedDate(salesChannelId)       |> fromFutureOption(InfoResponses.salesChannelNotFound(salesChannelId))
-      ifModifiedSince   <- request.ifModifiedSince                               |> fromHeaderParamError
+      ifModifiedSince   <- fromHeaderParamError(request.ifModifiedSince) // the same as using "request.ifModifiedSince |> fromHeaderParamError"
       lastModifiedStr   <- ifModifiedSince                                       |> InfoResponses.fromLastModified(lastModified, salesChannelId)
       infos             <- infoService.list(salesChannelId)                      |> fromFuture
       acceptEncoding    <- request.acceptEncoding                                |> fromHeaderParamError
