@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InfoRepository {
   def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]]
 
-  def insert(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
+  def insert(info: Info)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
 
   def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
@@ -34,16 +34,16 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     db.run(info.result)
   }
 
-  override def insert(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
+  override def insert(info: Info)(implicit ec: ExecutionContext): Future[Either[String,UUID]] = {
 
     val insertInfo = (dm.info returning dm.info.map(_.id) into ((item, id) => item.copy(id = id))) += info
 
     val action = for {
       i <- insertInfo
-    } yield Some(i.id)
+    } yield Right(i.id)
 
     db.run (action.transactionally).recover {
-      case e: Exception => logger.error("Error caught", e); None
+      case e: Exception => logger.error("Error caught", e); Left("Exception Occured")
     }
   }
 

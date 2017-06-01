@@ -28,7 +28,7 @@ class InfoRepositorySpec extends DBSpec {
     val info = Info(id = expectedId, name = "foo", data = dataJson.as[JsObject], meta = List("foo", "bar"), lastModified = getCurrentTimeStamp, salesChannelId = baseSalesChannelId)
 
     val result = infoRepository.insert(info)
-    result.futureValue.get should ===(expectedId)
+    result.futureValue.right.get should ===(expectedId)
 
     val allInfos = infoRepository.list(baseSalesChannelId).futureValue
 
