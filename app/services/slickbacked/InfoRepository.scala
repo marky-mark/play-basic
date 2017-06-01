@@ -2,7 +2,7 @@ package services.slickbacked
 
 import java.util.UUID
 
-import nl.grons.metrics.scala.DefaultInstrumented
+import metrics.MetricsService
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.Json
 
@@ -18,14 +18,14 @@ trait InfoRepository {
   def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
 
-class InfoRepositoryImpl(dbProvider: DatabaseProvider) extends InfoRepository with DefaultInstrumented {
+class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsService) extends InfoRepository {
 
   private val db = dbProvider.database
   private val dm = dbProvider.dataModel
 
   import dm.driver.api._
 
-  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]] = {
+  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[Info]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.timer") {
     val info = for {
       i <- dm.info if i.salesChannelId === salesChannelId
     } yield i
@@ -37,11 +37,11 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider) extends InfoRepository wi
 
     val insertInfo = (dm.info returning dm.info.map(_.id) into ((item, id) => item.copy(id = id))) += info
 
-    db.run {
-      for {
-        i <- insertInfo
-      } yield i.id
-    }
+    val action = for {
+      i <- insertInfo
+    } yield i.id
+
+    db.run (action.transactionally)
   }
 
   override def update(info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
