@@ -1,9 +1,10 @@
 import com.softwaremill.macwire._
 import controllers.{Assets, Default}
 import modules._
-import router.Routes
 import play.api.ApplicationLoader.Context
 import play.api._
+import play.api.http.HttpErrorHandler
+import router.Routes
 import play.api.mvc.EssentialFilter
 import play.api.routing.Router
 
@@ -24,6 +25,8 @@ trait ApplicationModules extends BuiltInComponents
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   lazy val prefix: String = "/"
+
+  override lazy val httpErrorHandler: HttpErrorHandler = new ErrorHandler()
 
   lazy val default: Default = wire[Default]
   lazy val assets: Assets = wire[Assets]
