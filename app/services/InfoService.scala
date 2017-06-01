@@ -18,7 +18,7 @@ trait InfoService {
 
   def insert(salesChannelId: SalesChannelId, id: UUID, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
-  def update(salesChannelId: SalesChannelId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
+  def update(salesChannelId: SalesChannelId, infoId: InfoId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
@@ -31,9 +31,9 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with L
     infoRepository.list(salesChannelId.value)
       .map(_.map(i => Info(id = Some(i.id.id[Info]), name = i.name, data = i.data.as[JsObject], meta = i.meta)))
 
-  override def update(salesChannelId: SalesChannelId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] =
+  override def update(salesChannelId: SalesChannelId, infoId: InfoId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] =
     infoRepository.update(InfoSlick(
-      id = info.id.get.value,
+      id = infoId.value,
       lastModified = getCurrentTimeStamp,
       salesChannelId = salesChannelId.value,
       meta = info.meta.toList,

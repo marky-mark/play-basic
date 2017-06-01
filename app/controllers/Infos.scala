@@ -47,6 +47,16 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
 
     response.merge
   }
+
+  def put(salesChannelId: ids.SalesChannelId, infoId: ids.InfoId) = Action.async(parse.tolerantJson) { implicit request =>
+    val response = for {
+      salesChannelChecked <- salesChannelRepository.exists(salesChannelId.value)  |> fromFutureOption(InfoResponses.salesChannelNotFound(salesChannelId))
+      body                <- request.body.validate[Info]                          |> fromJsResult
+      infoId              <- infoService.update(salesChannelId, infoId, body)     |> fromFutureOption(InfoResponses.issueUpdatingRule())
+    } yield Ok(Json.obj("id" -> infoId.toString))
+
+    response.merge
+  }
 }
 
 object InfoResponses {
@@ -65,7 +75,12 @@ object InfoResponses {
   }
 
   def issueCreatingRule() = {
-    val problem = Problem(title = "Internal Server Error", status = 500, detail = "Issue Cresting Rule")
+    val problem = Problem(title = "Internal Server Error", status = 500, detail = "Issue Creating Rule")
+    InternalServerError(Json.toJson(Seq(problem)))
+  }
+
+  def issueUpdatingRule() = {
+    val problem = Problem(title = "Internal Server Error", status = 500, detail = "Issue Updating Rule")
     InternalServerError(Json.toJson(Seq(problem)))
   }
 
