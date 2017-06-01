@@ -1,6 +1,7 @@
 package controllers
 
 import java.time.Clock
+import java.util.UUID
 
 import api.service.HeaderParams.RequestHeaderOps
 import api.service.models.JsonOps._
@@ -35,6 +36,17 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
 
     response.merge
   }
+
+  def post(salesChannelId: ids.SalesChannelId) = Action.async(parse.tolerantJson) { implicit request =>
+    val response = for {
+      salesChannelChecked <- salesChannelRepository.exists(salesChannelId.value)  |> fromFutureOption(InfoResponses.salesChannelNotFound(salesChannelId))
+      body                <- request.body.validate[Info]                          |> fromJsResult
+      id                  <- Future.successful(UUID.randomUUID())                 |> fromFuture
+      infoId              <- infoService.insert(salesChannelId, id, body)         |> fromFutureOption(InfoResponses.issueCreatingRule())
+    } yield Created(Json.obj("id" -> infoId.toString))
+
+    response.merge
+  }
 }
 
 object InfoResponses {
@@ -50,6 +62,11 @@ object InfoResponses {
   def salesChannelNotFound(salesChannelId: SalesChannelId) = {
     val problem = Problem(title = "Not Found", status = 404, detail = s"Sales channel ${salesChannelId.value.toString} does not exist")
     NotFound(Json.toJson(Seq(problem)))
+  }
+
+  def issueCreatingRule() = {
+    val problem = Problem(title = "Internal Server Error", status = 500, detail = "Issue Cresting Rule")
+    InternalServerError(Json.toJson(Seq(problem)))
   }
 
   def fromEncodingHeader(rules: Seq[Info])(acceptEncoding: Option[String]) = EitherT[Future, Result, JsValue] {

@@ -6,6 +6,7 @@ import java.util.UUID
 import api.common.Id._
 import api.service.models.Info
 import api.service.tags.ids._
+import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.JsObject
 import services.slickbacked.{InfoRepository, InfoSlick}
@@ -15,14 +16,14 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InfoService {
   def list(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Seq[Info]]
 
-  def insert(salesChannelId: SalesChannelId, info: Info)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
+  def insert(salesChannelId: SalesChannelId, id: UUID, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def update(salesChannelId: SalesChannelId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
   def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
 
-class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService {
+class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with LazyLogging {
 
   private def getCurrentTimeStamp: Timestamp = new Timestamp(new DateTime(DateTimeZone.UTC).getMillis)
 
@@ -39,14 +40,18 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService {
       name = info.name,
       data = info.data))
 
-  override def insert(salesChannelId: SalesChannelId, info: Info)(implicit ec: ExecutionContext): Future[Either[String, UUID]] =
+  override def insert(salesChannelId: SalesChannelId, id: UUID, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]] = {
     infoRepository.insert(InfoSlick(
-      id = info.id.get.value,
+      id = id,
       lastModified = getCurrentTimeStamp,
       salesChannelId = salesChannelId.value,
       meta = info.meta.toList,
       name = info.name,
-      data = info.data))
+      data = info.data)).map {
+        case Left(s) => None
+        case Right(i) => Some(i)
+      }
+  }
 
   override def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]] =
     infoRepository.getLastModifiedDate(salesChannelId.value)

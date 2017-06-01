@@ -5,4 +5,4 @@ GET     /assets/*file                                           controllers.Asse
 GET     /ui                                                     controllers.Default.redirect(to="/assets/lib/swagger-ui/index.html?/url=/assets/swagger.json")
 
 GET 	/api/sales-channels/:sales_channel_id/infos	            controllers.Infos.list(sales_channel_id: ids.SalesChannelId)
-#PUT     /api/sales-channels/:sales_channel_id/rules/:rule_id    controllers.Infos.put(sales_channel_id: ids.SalesChannelId, rule_id: ids.RuleWithSideEffectsId)
+POST    /api/sales-channels/:sales_channel_id/infos             controllers.Infos.post(sales_channel_id: ids.SalesChannelId)
