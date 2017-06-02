@@ -11,9 +11,18 @@ services:
     ports:
       - "5432:5432"
 
+  schema:
+      image: claycephas/flyway
+      command: -url=jdbc:postgresql://${DOCKER_IP}:5432/play_basic -schemas=public -user=playbasic -password=playbasic -locations=filesystem:/dbscripts migrate
+      volumes:
+        - .:/dbscripts
+      depends_on:
+        - postgres
+
   play-basic:
     image: play-basic:0.0.1-SNAPSHOT
     depends_on:
+      - schema
       - postgres
     environment:
       - PostgresUrl=jdbc:postgresql://${DOCKER_IP}:5432/play_basic
