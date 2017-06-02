@@ -11,6 +11,8 @@ services:
     ports:
       - "5432:5432"
 
+#  Note....the schema execution is a little unpredictable as the db needs to be up and awaiting connections before, currently
+# this is not possible in docker compose :(
   schema:
       image: claycephas/flyway
       command: -url=jdbc:postgresql://${DOCKER_IP}:5432/play_basic -schemas=public -user=playbasic -password=playbasic -locations=filesystem:/dbscripts migrate
