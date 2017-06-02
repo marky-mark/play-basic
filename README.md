@@ -3,4 +3,9 @@
 Basic Scala Api Application
 ============================
 
+```bash
+export DOCKER_IP=$(docker-machine ip default)
+docker-compose up
+```
+
 

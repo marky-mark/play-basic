@@ -90,6 +90,8 @@ dockerExposedPorts in Docker := Seq(9000)
 dockerExposedVolumes in Docker := Seq("/opt/docker/logs")
 daemonUser in Docker := "root"
 
+dockerImageCreationTask := (publishLocal in Docker).value
+
 routesGenerator := InjectedRoutesGenerator
 routesImport := Seq(
   "api.service.binders._",

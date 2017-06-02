@@ -1,9 +1,22 @@
-postgres:
-  container_name: "pg-it-test"
-  image: postgres:9.4.4
-  environment:
-    - POSTGRES_USER=playbasic
-    - POSTGRES_PASSWORD=test
-    - POSTGRES_DB=playbasic
-  ports:
-    - "5432:5432"
+version: "2"
+
+services:
+
+  postgres:
+    image: postgres:9.4.4
+    environment:
+      - POSTGRES_USER=playbasic
+      - POSTGRES_PASSWORD=playbasic
+      - POSTGRES_DB=play_basic
+    ports:
+      - "5432:5432"
+
+  play-basic:
+    image: play-basic:0.0.1-SNAPSHOT
+    depends_on:
+      - postgres
+    environment:
+      - PostgresUrl=jdbc:postgresql://${DOCKER_IP}:5432/play_basic
+    hostname: play-basic
+    ports:
+      - 9000:9000
