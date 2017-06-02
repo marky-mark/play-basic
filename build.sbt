@@ -17,8 +17,35 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code"  // Warn when dead code is identified.
 )
 
+val customItSettings = Defaults.itSettings ++ inConfig(IntegrationTest)(Seq(
+  scalaSource := baseDirectory.value / "it",
+  resources := Seq(baseDirectory.value / "it" / "resources"),
+  resourceDirectory := baseDirectory.value / "it" / "resources",
+  fork in test := true,
+  parallelExecution := false,
+  javaOptions += s"-Dconfig.file=${baseDirectory.value}/it/resources/application.it.conf"
+))
+
+
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
+  .configs(IntegrationTest)
+  .settings(customItSettings)
+
+//To use 'dockerComposeTest' to run tests in the 'IntegrationTest' scope instead of the default 'Test' scope:
+// 1) Package the tests that exist in the IntegrationTest scope
+testCasesPackageTask := (sbt.Keys.packageBin in IntegrationTest).value
+// 2) Specify the path to the IntegrationTest jar produced in Step 1
+testCasesJar := artifactPath.in(IntegrationTest, packageBin).value.getAbsolutePath
+// 3) Include any IntegrationTest scoped resources on the classpath if they are used in the tests
+testDependenciesClasspath := {
+  val fullClasspathCompile = (fullClasspath in Compile).value
+  val classpathTestManaged = (managedClasspath in IntegrationTest).value
+  val classpathTestUnmanaged = (unmanagedClasspath in IntegrationTest).value
+  val testResources = (resources in IntegrationTest).value
+  (fullClasspathCompile.files ++ classpathTestManaged.files ++ classpathTestUnmanaged.files ++ testResources).map(_.getAbsoluteFile).mkString(File.pathSeparator)
+}
+
 
 git.useGitDescribe := true
 
@@ -63,10 +90,12 @@ libraryDependencies ++= Seq(
   "com.softwaremill.macwire" %% "proxy" % MacwireVersion,
 
   "com.typesafe.play" %% "play-datacommons" % "2.5.10",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "org.mockito" % "mockito-core" % "2.3.7" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
+  "org.mockito" % "mockito-core" % "2.3.7" % "test,it",
   "com.h2database" % "h2" % "1.4.187" % "test",
-  "org.flywaydb" %% "flyway-play" % "3.0.1" % "test"
+  "org.flywaydb" %% "flyway-play" % "3.0.1" % "test,it",
+  "io.rest-assured" % "rest-assured" % "3.0.3" % "it",
+  "org.scalaj" %% "scalaj-http" % "2.2.1" % "it"
 )
 
 fork in run := true

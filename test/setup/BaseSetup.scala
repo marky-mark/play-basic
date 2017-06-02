@@ -1,4 +1,4 @@
-package controllers
+package setup
 
 import java.time.{Clock, Instant, ZoneOffset}
 

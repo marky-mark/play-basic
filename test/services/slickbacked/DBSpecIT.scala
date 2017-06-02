@@ -10,8 +10,9 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import setup.BaseSetup
 
-trait DBSpec extends FlatSpec
+trait DBSpecIT extends FlatSpec
   with BaseSetup
   with Matchers
   with ScalaFutures

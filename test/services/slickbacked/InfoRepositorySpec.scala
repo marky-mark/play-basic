@@ -8,7 +8,7 @@ import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.Await
 
-class InfoRepositorySpec extends DBSpec {
+class InfoRepositorySpec extends DBSpecIT {
 
   import dataModel.driver.api._
 

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.Await
 
-class SalesChannelRepositorySpec extends DBSpec {
+class SalesChannelRepositorySpec extends DBSpecIT {
 
   import dataModel.driver.api._
 
