@@ -1,4 +1,4 @@
-version: "2"
+version: '3.1'
 
 services:
 
@@ -20,7 +20,7 @@ services:
         - postgres
 
   play-basic:
-    image: play-basic:0.0.1-SNAPSHOT
+    image: play-basic:0.0.1-2-g64d2b82-SNAPSHOT
     depends_on:
       - schema
       - postgres
