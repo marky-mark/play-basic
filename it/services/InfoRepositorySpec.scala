@@ -1,10 +1,11 @@
-package services.slickbacked
+package services
 
 import java.sql.Timestamp
 import java.util.UUID
 
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{JsObject, Json}
+import services.slickbacked.{DBSpecIT, InfoSlick}
 
 import scala.concurrent.Await
 

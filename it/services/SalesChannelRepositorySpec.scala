@@ -1,6 +1,8 @@
-package services.slickbacked
+package services
 
 import java.util.UUID
+
+import services.slickbacked.{DBSpecIT, SalesChannelsSlick}
 
 import scala.concurrent.Await
 

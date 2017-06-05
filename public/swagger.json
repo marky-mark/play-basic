@@ -59,8 +59,6 @@
         }, {
           "$ref" : "#/parameters/FlowId"
         }, {
-          "$ref" : "#/parameters/InfoId"
-        }, {
           "name" : "body",
           "in" : "body",
           "required" : true,
