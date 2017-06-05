@@ -12,7 +12,7 @@ services:
       - "5432:5432"
 
 #  Note....the schema execution is a little unpredictable as the db needs to be up and awaiting connections before, currently
-# this is not possible in docker compose :(
+# this is not possible in docker compose yet :(
   schema:
       image: claycephas/flyway
       command: -url=jdbc:postgresql://${DOCKER_IP}:5432/play_basic -schemas=public -user=playbasic -password=playbasic -locations=filesystem:/dbscripts migrate
@@ -22,7 +22,7 @@ services:
         - postgres
 
   play-basic:
-    image: play-basic:0.0.1-2-g64d2b82-SNAPSHOT
+    image: play-basic:0.0.1-8-g2b0311d-SNAPSHOT
     depends_on:
       - schema
       - postgres

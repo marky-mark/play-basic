@@ -67,8 +67,22 @@ scalacOptions ++= Seq(
 )
 
 val MacwireVersion = "2.2.3"
+lazy val macwireDeps = Seq(
+  "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
+  "com.softwaremill.macwire" %% "util" % MacwireVersion,
+  "com.softwaremill.macwire" %% "proxy" % MacwireVersion
+).map {
+  _.excludeAll(
+    ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12"),
+    ExclusionRule(organization = "javax.jms"),
+    ExclusionRule(organization = "com.sun.jmx"),
+    ExclusionRule(organization = "com.sun.jdmk"),
+    ExclusionRule(organization = "org.jboss.logging"),
+    ExclusionRule(organization = "com.typesafe.scala-logging")
+  )
+}
 
-libraryDependencies ++= Seq(
+libraryDependencies ++= macwireDeps ++ Seq(
   ws,
   "nl.grons"                  %% "metrics-scala"                % "3.5.5_a2.3",
   "io.dropwizard.metrics"     %  "metrics-json"                 % "3.1.2",
@@ -85,11 +99,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "swagger-ui" % "2.2.5",
   "org.scalaz" %% "scalaz-core" % "7.2.2",
 
-  "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
-  "com.softwaremill.macwire" %% "util" % MacwireVersion,
-  "com.softwaremill.macwire" %% "proxy" % MacwireVersion,
-
   "com.typesafe.play" %% "play-datacommons" % "2.5.10",
+
   "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
   "org.mockito" % "mockito-core" % "2.3.7" % "test,it",
   "com.h2database" % "h2" % "1.4.187" % "test",

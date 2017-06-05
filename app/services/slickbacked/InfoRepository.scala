@@ -26,7 +26,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
 
   import dm.driver.api._
 
-  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.timer") {
+  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.list") {
     val info = for {
       i <- dm.info if i.salesChannelId === salesChannelId
     } yield i
