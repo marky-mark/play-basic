@@ -24,3 +24,7 @@ private[cache] class LocalCache[E <: AnyRef](ttl: FiniteDuration, maximumSize: I
   def invalidate[ID <: AnyRef](key: ID) = cache.invalidate(key)
 }
 
+object LocalCache {
+  def apply[E <: AnyRef](ttl: FiniteDuration, maximumSize: Int) = new LocalCache[E](ttl, maximumSize)
+}
+

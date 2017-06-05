@@ -22,7 +22,7 @@ paths:
 
   /sales-channels/{sales_channel_id}/infos:
       get:
-        summary: Return all rules and their side effects for a sales channel
+        summary: Return all infos
         parameters:
           - $ref: '#/parameters/SalesChannelId'
           - $ref: '#/parameters/FlowId'
@@ -52,7 +52,6 @@ paths:
         parameters:
           - $ref: '#/parameters/SalesChannelId'
           - $ref: '#/parameters/FlowId'
-          - $ref: '#/parameters/InfoId'
           - name: body
             in: body
             required: true
@@ -91,6 +90,29 @@ paths:
       responses:
         200:
           description: Successful
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      summary: Return info by id
+      parameters:
+        - $ref: '#/parameters/SalesChannelId'
+        - $ref: '#/parameters/FlowId'
+        - $ref: '#/parameters/InfoId'
+      tags: Info API
+      produces:
+        - application/json
+        - application/problem+json
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/Info'
         400:
           description: Bad Request
         401:
@@ -161,13 +183,13 @@ definitions:
         description: Unique rule Id
       name:
         type: string
-        description: A name of the rule
+        description: A name of the info
       data:
         type: object
-        description: Json representing side effects (enrichments)
+        description: Json stuff
       meta:
         type: array
-        description: Ids of rules that are linked to the current rule
+        description: array of things
         minItems: 0
         items:
           type: string

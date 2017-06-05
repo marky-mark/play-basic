@@ -5,16 +5,21 @@ import java.util.UUID
 
 import api.common.Id._
 import api.service.models.Info
+import api.service.tags.ids
 import api.service.tags.ids._
+import cache.LocalCache
 import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.JsObject
 import services.slickbacked.{InfoRepository, InfoSlick}
 
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 trait InfoService {
   def list(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Seq[Info]]
+
+  def retrieve(salesChannelId: SalesChannelId, infoId: ids.InfoId)(implicit ec: ExecutionContext): Future[Option[Info]]
 
   def insert(salesChannelId: SalesChannelId, id: UUID, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
@@ -26,6 +31,8 @@ trait InfoService {
 class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with LazyLogging {
 
   private def getCurrentTimeStamp: Timestamp = new Timestamp(new DateTime(DateTimeZone.UTC).getMillis)
+
+  private val cache = LocalCache[Option[Info]](1.hour, 10000)
 
   override def list(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Seq[Info]] =
     infoRepository.list(salesChannelId.value)
@@ -50,9 +57,15 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with L
       data = info.data)).map {
         case Left(s) => None
         case Right(i) => Some(i)
-      }
+    }
   }
 
   override def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]] =
     infoRepository.getLastModifiedDate(salesChannelId.value)
+
+  override def retrieve(salesChannelId: SalesChannelId, infoId: ids.InfoId)(implicit ec: ExecutionContext): Future[Option[Info]] =
+    cache.memo(salesChannelId.value.toString + infoId.value.toString) { _ =>
+      infoRepository.retrieve(salesChannelId.value, infoId.value)
+        .map(_.map(i => Info(id = Some(i.id.id[Info]), name = i.name, data = i.data.as[JsObject], meta = i.meta)))
+    }
 }

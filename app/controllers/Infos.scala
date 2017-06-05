@@ -57,6 +57,15 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
 
     response.merge
   }
+
+  def get(salesChannelId: ids.SalesChannelId, infoId: ids.InfoId) = Action.async { implicit request =>
+    val response = for {
+      salesChannelChecked <- salesChannelRepository.exists(salesChannelId.value)  |> fromFutureOption(InfoResponses.salesChannelNotFound(salesChannelId))
+      info                <- infoService.retrieve(salesChannelId, infoId)         |> fromFutureOption(InfoResponses.issueUpdatingRule())
+    } yield Ok(Json.toJson(info))
+
+    response.merge
+  }
 }
 
 object InfoResponses {
