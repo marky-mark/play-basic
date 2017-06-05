@@ -32,6 +32,11 @@ sbt dockerComposeUp
 
 #### Prerequisites
 
+* Postgres 9.4+
+* Follow flyway instructions 
+
+
+```bash sbt run```
 
 ### Tests
 
