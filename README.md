@@ -33,4 +33,10 @@ sbt dockerComposeUp
 #### Prerequisites
 
 
+### Tests
+
+```bash
+sbt test dockerComposeTest
+```
+
 
