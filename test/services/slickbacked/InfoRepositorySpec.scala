@@ -30,10 +30,9 @@ class InfoRepositorySpec extends DBSpecIT {
     val result = infoRepository.insert(info)
     result.futureValue.right.get should ===(expectedId)
 
-    val allInfos = infoRepository.list(baseSalesChannelId).futureValue
+    val infoRetrieved = infoRepository.retrieve(baseSalesChannelId, expectedId).futureValue
 
-    allInfos.size should ===(1)
-    allInfos.head should ===(info)
+    infoRetrieved.get should ===(info)
   }
 
   it should "update info record in the database" in {

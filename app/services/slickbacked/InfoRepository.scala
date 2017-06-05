@@ -12,6 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InfoRepository {
   def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]]
 
+  def retrieve(salesChannelId: UUID, infoId: UUID)(implicit ec: ExecutionContext): Future[Option[InfoSlick]]
+
   def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
 
   def update(info: InfoSlick)(implicit ec: ExecutionContext): Future[Option[UUID]]
@@ -60,5 +62,13 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
   override def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]] = {
     db.run(dm.info.filter(_.salesChannelId === salesChannelId).map(_.lastModified).max.result)
       .map(o => o.map(t => new DateTime(t.getTime).toDateTime(DateTimeZone.UTC)))
+  }
+
+  override def retrieve(salesChannelId: UUID, infoId: UUID)(implicit ec: ExecutionContext): Future[Option[InfoSlick]] = {
+    val info = for {
+      i <- dm.info if i.salesChannelId === salesChannelId && i.id === infoId
+    } yield i
+
+    db.run(info.result.headOption)
   }
 }

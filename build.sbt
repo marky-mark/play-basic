@@ -100,6 +100,7 @@ libraryDependencies ++= macwireDeps ++ Seq(
   "org.scalaz" %% "scalaz-core" % "7.2.2",
 
   "com.typesafe.play" %% "play-datacommons" % "2.5.10",
+  "com.google.code.findbugs" % "jsr305" % "2.0.3",
 
   "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
   "org.mockito" % "mockito-core" % "2.3.7" % "test,it",
