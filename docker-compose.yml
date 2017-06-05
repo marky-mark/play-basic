@@ -22,7 +22,7 @@ services:
         - postgres
 
   play-basic:
-    image: play-basic:0.0.1-8-g2b0311d-SNAPSHOT
+    image: play-basic:0.0.1-12-g59b862a
     depends_on:
       - schema
       - postgres
