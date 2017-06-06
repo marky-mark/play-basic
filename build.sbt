@@ -1,4 +1,3 @@
-import swaggerboot.playversion.SupportedPlayVersion
 import java.io.File
 
 name := "play-basic"
@@ -28,7 +27,7 @@ val customItSettings = Defaults.itSettings ++ inConfig(IntegrationTest)(Seq(
 
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, SwaggerGenerate, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
+  .enablePlugins(PlayScala, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
   .configs(IntegrationTest)
   .settings(customItSettings)
 
@@ -111,17 +110,6 @@ libraryDependencies ++= macwireDeps ++ Seq(
 )
 
 fork in run := true
-
-// Swagger boostrap settings
-swaggerSourceDirectory := new File("swagger")
-swaggerAutoUpdateSwaggerJson := Some("public/swagger.json")
-swaggerServiceSpecName := Some("api.yaml")
-swaggerGenerateControllerStubs := false
-swaggerGenerateClient := true
-swaggerUpdatePlayRoutes := false
-swaggerEnumVendorExtensionName := Some("x-extensible-enum")
-swaggerTaggedAttributes := Seq("label", "connectives", "md5")
-swaggerPlayVersion := SupportedPlayVersion.Play25
 
 //Docker stuff:
 maintainer in Docker := "mkelly28@tcd.ie"
