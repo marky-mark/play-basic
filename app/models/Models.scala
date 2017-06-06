@@ -35,6 +35,7 @@ object Models {
   sealed trait ServiceErrorType
 
   case object DbError extends ServiceErrorType
+  case object ClientError extends ServiceErrorType
   case object ValidationError extends ServiceErrorType
 
   case class ServiceError(`type`: ServiceErrorType, message: String, detail: Option[String] = None)

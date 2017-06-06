@@ -82,7 +82,7 @@ lazy val macwireDeps = Seq(
 }
 
 libraryDependencies ++= macwireDeps ++ Seq(
-  ws,
+  "com.typesafe.play" %% "play-ws"              % "2.4.11",
   "nl.grons"                  %% "metrics-scala"                % "3.5.5_a2.3",
   "io.dropwizard.metrics"     %  "metrics-json"                 % "3.1.2",
   "io.dropwizard.metrics"     %  "metrics-jvm"                  % "3.1.2",
