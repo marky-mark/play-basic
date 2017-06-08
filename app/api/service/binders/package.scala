@@ -1,7 +1,3 @@
-//
-// This is a generated file.
-//
-
 package api.service
 
 import api.service.models._

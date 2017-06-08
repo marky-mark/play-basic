@@ -1,5 +1,3 @@
-// This is a generated file
-
 package api.service
 
 case class ContentType(val value: String) extends AnyVal
