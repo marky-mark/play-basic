@@ -2,10 +2,10 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import api.client.ServiceInfoClient
-import api.client.play_basic.models.Info
-import api.client.play_basic.models.JsonOps._
-import api.client.play_basic.refs.{FlowRef, SalesChannelRef}
-import api.client.play_basic.tags.ids.FlowId
+import api.service.models.Info
+import api.service.models.JsonOps._
+import api.service.refs.{FlowRef, SalesChannelRef}
+import api.service.tags.ids.FlowId
 import api.common.Id._
 import com.typesafe.config.{Config, ConfigFactory}
 import models.Models.ServiceError

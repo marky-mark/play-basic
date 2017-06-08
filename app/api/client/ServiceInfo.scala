@@ -1,7 +1,7 @@
 package api.client
 
-import api.client.play_basic.models.Info
-import api.client.play_basic.tags.ids._
+import api.service.models.Info
+import api.service.tags.ids._
 import api.client.play_basic.{Client, ClientImpl}
 import api.common.client.RequestTimeout
 import api.common.client.Result.{Error, Success}
