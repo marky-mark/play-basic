@@ -23,7 +23,7 @@ services:
 
   play-basic:
     #  build: ./target/docker/stage // not supported by sbt docker compose
-    image: play-basic:0.0.1-14-gb0e77d5-SNAPSHOT
+    image: play-basic:0.0.1-20-g29b316b
     depends_on:
       - schema
       - postgres
