@@ -1,6 +1,6 @@
-package api.client.play_basic
+package com.markland.api.client.play_basic
 
-import _root_.api.common.client._
+import com.markland.api.client.common.client._
 import com.markland.service.models._
 import play.api.libs.json.Json
 import com.markland.service.tags

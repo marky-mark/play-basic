@@ -2,9 +2,9 @@ package api.client
 
 import com.markland.service.models.Info
 import com.markland.service.tags.ids._
-import api.client.play_basic.{Client, ClientImpl}
-import api.common.client.RequestTimeout
-import api.common.client.Result.{Error, Success}
+import com.markland.api.client.play_basic.{Client, ClientImpl}
+import com.markland.api.client.common.client.RequestTimeout
+import com.markland.api.client.common.client.Result.{Error, Success}
 import models.Models._
 import play.api.Logger
 import play.api.libs.ws.WSClient

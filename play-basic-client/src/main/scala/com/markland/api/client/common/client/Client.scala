@@ -1,4 +1,4 @@
-package api.common.client
+package com.markland.api.client.common.client
 
 import play.api.libs.ws.{WSRequest, WSResponse, WSResponseHeaders}
 

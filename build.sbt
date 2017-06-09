@@ -62,12 +62,21 @@ lazy val macwireDeps = Seq(
 }
 
 lazy val playDep = Seq("com.typesafe.play" %% "play-datacommons" % "2.5.10")
+lazy val playWsDep = Seq("com.typesafe.play" %% "play-ws" % "2.4.11")
 
 lazy val models = (project in file("play-basic-models"))
   .settings(commonSettings)
   .enablePlugins(PlayScala)
   .settings(
     libraryDependencies ++= playDep.map(_ % "provided")
+  )
+
+lazy val playBasicClient = (project in file("play-basic-client"))
+  .settings(commonSettings)
+  .enablePlugins(PlayScala)
+  .dependsOn(models)
+  .settings(
+    libraryDependencies ++= playDep.map(_ % "provided") ++ playWsDep.map(_ % "provided")
   )
 
 lazy val root = (project in file("."))
@@ -79,8 +88,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "play-basic",
     git.useGitDescribe := true,
-    libraryDependencies ++= macwireDeps ++ playDep ++ Seq(
-      "com.typesafe.play" %% "play-ws" % "2.4.11",
+    libraryDependencies ++= macwireDeps ++ playDep ++ playWsDep ++ Seq(
       "nl.grons" %% "metrics-scala" % "3.5.5_a2.3",
       "io.dropwizard.metrics" % "metrics-json" % "3.1.2",
       "io.dropwizard.metrics" % "metrics-jvm" % "3.1.2",
@@ -116,8 +124,8 @@ lazy val root = (project in file("."))
       "com.markland.service.IdBindables._"
     )
   )
-  .dependsOn(models)
-  .aggregate(models)
+  .dependsOn(models, playBasicClient)
+  .aggregate(models, playBasicClient)
 
 //To use 'dockerComposeTest' to run tests in the 'IntegrationTest' scope instead of the default 'Test' scope:
 // 1) Package the tests that exist in the IntegrationTest scope
