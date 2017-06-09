@@ -61,6 +61,15 @@ lazy val macwireDeps = Seq(
   )
 }
 
+lazy val playDep = Seq("com.typesafe.play" %% "play-datacommons" % "2.5.10")
+
+lazy val models = (project in file("play-basic-models"))
+  .settings(commonSettings)
+  .enablePlugins(PlayScala)
+  .settings(
+    libraryDependencies ++= playDep.map(_ % "provided")
+  )
+
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
   .configs(IntegrationTest)
@@ -70,7 +79,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "play-basic",
     git.useGitDescribe := true,
-    libraryDependencies ++= macwireDeps ++ Seq(
+    libraryDependencies ++= macwireDeps ++ playDep ++ Seq(
       "com.typesafe.play" %% "play-ws" % "2.4.11",
       "nl.grons" %% "metrics-scala" % "3.5.5_a2.3",
       "io.dropwizard.metrics" % "metrics-json" % "3.1.2",
@@ -87,7 +96,6 @@ lazy val root = (project in file("."))
       "org.webjars" % "swagger-ui" % "2.2.5",
       "org.scalaz" %% "scalaz-core" % "7.2.2",
 
-      "com.typesafe.play" %% "play-datacommons" % "2.5.10",
       "com.google.code.findbugs" % "jsr305" % "2.0.3",
 
       "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
@@ -102,12 +110,14 @@ lazy val root = (project in file("."))
 
     routesGenerator := InjectedRoutesGenerator,
     routesImport := Seq(
-      "api.service.binders._",
-      "api.service.models._",
-      "api.service.tags.ids",
-      "api.common.IdBindables._"
+      "com.markland.service.binders._",
+      "com.markland.service.models._",
+      "com.markland.service.tags.ids",
+      "com.markland.service.IdBindables._"
     )
   )
+  .dependsOn(models)
+  .aggregate(models)
 
 //To use 'dockerComposeTest' to run tests in the 'IntegrationTest' scope instead of the default 'Test' scope:
 // 1) Package the tests that exist in the IntegrationTest scope

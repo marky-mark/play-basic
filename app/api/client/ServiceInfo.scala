@@ -1,7 +1,7 @@
 package api.client
 
-import api.service.models.Info
-import api.service.tags.ids._
+import com.markland.service.models.Info
+import com.markland.service.tags.ids._
 import api.client.play_basic.{Client, ClientImpl}
 import api.common.client.RequestTimeout
 import api.common.client.Result.{Error, Success}

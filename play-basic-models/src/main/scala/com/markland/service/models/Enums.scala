@@ -1,4 +1,4 @@
-package api.service.models
+package com.markland.service.models
 
 import scala.util.{Either, Left, Right}
 

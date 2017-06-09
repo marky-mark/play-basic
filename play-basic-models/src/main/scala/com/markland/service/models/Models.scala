@@ -1,7 +1,8 @@
-package api.service.models
+package com.markland.service.models
 
-import api.service.tags._
+import com.markland.service.tags._
 
+import play.api.libs.json._
 
 
 case class Info(

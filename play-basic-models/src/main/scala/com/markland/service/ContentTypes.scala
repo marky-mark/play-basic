@@ -1,4 +1,4 @@
-package api.service
+package com.markland.service
 
 case class ContentType(val value: String) extends AnyVal
 

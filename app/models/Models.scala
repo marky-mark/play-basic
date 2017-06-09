@@ -1,7 +1,7 @@
 package models
 
-import api.service.models.Problem
-import api.service.tags.ids._
+import com.markland.service.models.Problem
+import com.markland.service.tags.ids._
 import play.api.http.Status
 
 object Models {

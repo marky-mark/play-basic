@@ -2,11 +2,11 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import api.client.ServiceInfoClient
-import api.service.models.Info
-import api.service.models.JsonOps._
-import api.service.refs.{FlowRef, SalesChannelRef}
-import api.service.tags.ids.FlowId
-import api.common.Id._
+import com.markland.service.models.Info
+import com.markland.service.models.JsonOps._
+import com.markland.service.refs.{FlowRef, SalesChannelRef}
+import com.markland.service.tags.ids.FlowId
+import com.markland.service.Id._
 import com.typesafe.config.{Config, ConfigFactory}
 import models.Models.ServiceError
 import play.api.libs.json.{JsObject, Json}
@@ -17,6 +17,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Success, Try}
 import scalaj.http.{Http, HttpResponse}
 import scalaz._, Scalaz._
+
 class BasicAppSpec extends InfoSpec {
 
   val config: Config = ConfigFactory.load("application.it.conf")

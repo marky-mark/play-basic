@@ -1,8 +1,8 @@
 package controllers
 
-import api.service.HeaderParams
-import api.service.HeaderParams.HeaderParamError
-import api.service.models.Problem
+import com.markland.service.HeaderParams
+import com.markland.service.HeaderParams.HeaderParamError
+import com.markland.service.models.Problem
 import models.Models.{Problems, ServiceError, ValidationError => InternalValidationError}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, JsResult, Json}
@@ -18,7 +18,7 @@ import Scalaz._
 
 object Response  {
 
-  import api.service.models.JsonOps._
+  import com.markland.service.models.JsonOps._
 
   def fromJsResult[T](result: JsResult[T]) = EitherT[Future, Result, T] {
 

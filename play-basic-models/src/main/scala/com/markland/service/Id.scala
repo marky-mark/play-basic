@@ -1,5 +1,5 @@
 
-package api.common
+package com.markland.service
 
 case class Id[V, T](value: V) extends AnyVal {
   override def toString = value.toString

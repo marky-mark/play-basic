@@ -1,11 +1,11 @@
 package api.client.play_basic
 
 import _root_.api.common.client._
-import api.service.models._
+import com.markland.service.models._
 import play.api.libs.json.Json
-import api.service.tags
-import api.service.ContentTypes
-import api.service.ContentType
+import com.markland.service.tags
+import com.markland.service.ContentTypes
+import com.markland.service.ContentType
 import play.api.libs.ws.{WSClient, WSRequest}
 
 import scala.util.{Either, Left, Right}

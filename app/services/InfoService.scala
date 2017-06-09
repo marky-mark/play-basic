@@ -3,10 +3,10 @@ package services
 import java.sql.Timestamp
 import java.util.UUID
 
-import api.common.Id._
-import api.service.models.Info
-import api.service.tags.ids
-import api.service.tags.ids._
+import com.markland.service.Id._
+import com.markland.service.models.Info
+import com.markland.service.tags.ids
+import com.markland.service.tags.ids._
 import cache.LocalCache
 import com.typesafe.scalalogging.LazyLogging
 import org.joda.time.{DateTime, DateTimeZone}

@@ -1,6 +1,6 @@
-package api.service.models
+package com.markland.service.models
 
-import api.service.tags._
+import com.markland.service.tags._
 
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
@@ -10,7 +10,7 @@ import scala.util.control.Exception.nonFatalCatch
 
 object JsonOps {
 
-  import _root_.api.common.Id._
+  import com.markland.service.Id._
 
   implicit val jodaDateTimeReads = Reads[org.joda.time.DateTime] {
     _.validate[String].flatMap { dateStr =>

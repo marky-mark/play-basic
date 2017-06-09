@@ -4,11 +4,11 @@ import java.time.Clock
 import java.util.UUID
 
 import akka.actor.ActorSystem
-import api.service.HeaderParams.RequestHeaderOps
-import api.service.models.JsonOps._
-import api.service.models.{Info, Problem}
-import api.service.tags.ids
-import api.service.tags.ids.SalesChannelId
+import com.markland.service.HeaderParams.RequestHeaderOps
+import com.markland.service.models.JsonOps._
+import com.markland.service.models.{Info, Problem}
+import com.markland.service.tags.ids
+import com.markland.service.tags.ids.SalesChannelId
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{JsValue, Json}

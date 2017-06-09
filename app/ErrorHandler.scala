@@ -1,8 +1,8 @@
 import java.util.UUID
 
-import api.common.Id._
-import api.service.models._
-import api.service.refs.TrackingRef
+import com.markland.service.Id._
+import com.markland.service.models._
+import com.markland.service.refs.TrackingRef
 import com.typesafe.scalalogging.LazyLogging
 import models.Models.Problems
 import play.api.http.HttpErrorHandler
@@ -14,7 +14,7 @@ import scala.concurrent.Future
 
 class ErrorHandler extends HttpErrorHandler with LazyLogging {
 
-  import api.service.models.JsonOps._
+  import com.markland.service.models.JsonOps._
   import play.api.http.Status
 
   sealed trait ErrorCode
