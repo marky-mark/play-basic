@@ -16,7 +16,7 @@ Basic Scala Api Application
 export DOCKER_IP=$(docker-machine ip default)
 ```
 
-Start by...
+Can start by using docker compose, but the issue here is that the schema might not be applied. This is due to the limitations of docker compose not waiting for the db to be up applying flyway.
 
 ```bash
 docker-compose up
@@ -36,7 +36,9 @@ sbt dockerComposeUp
 * Follow flyway instructions 
 
 
-```bash sbt run```
+```bash
+sbt run
+```
 
 ### Tests
 
