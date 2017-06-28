@@ -37,8 +37,8 @@ lazy val commonSettings = Seq(
 
 lazy val dockerSettings = Seq(
   maintainer in Docker := "mkelly28@tcd.ie",
-  dockerBaseImage := "registry.opensource.zalan.do/stups/openjdk:8u91-b14-1-22",
-  //dockerRepository in Docker := Some(""),
+  dockerBaseImage in Docker := "registry.opensource.zalan.do/stups/openjdk:8u91-b14-1-22",
+  dockerRepository in Docker := Some("markymark1"),
   dockerExposedPorts in Docker := Seq(9000),
   dockerExposedVolumes in Docker := Seq("/opt/docker/logs"),
   daemonUser in Docker := "root",
@@ -126,6 +126,7 @@ lazy val root = (project in file("."))
   )
   .dependsOn(models, playBasicClient)
   .aggregate(models, playBasicClient)
+  .settings(aggregate in Docker := false)
 
 //To use 'dockerComposeTest' to run tests in the 'IntegrationTest' scope instead of the default 'Test' scope:
 // 1) Package the tests that exist in the IntegrationTest scope
