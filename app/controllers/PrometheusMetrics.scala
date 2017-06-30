@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrometheusMetrics(metricsPlugin: MetricsPlugin)(implicit val ec: ExecutionContext) extends Controller {
 
   def metrics = Action.async { implicit request =>
-    if (!metricsPlugin.enabled && !prometheusEnabled) Future.successful(InternalServerError("prometheus not enabled")) else {
+    if (!metricsPlugin.enabled || !prometheusEnabled) Future.successful(InternalServerError("prometheus not enabled")) else {
 
       val samples = new StringBuilder()
       val writer = new WriterAdapter(samples)
