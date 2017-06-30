@@ -93,6 +93,8 @@ lazy val root = (project in file("."))
       "io.dropwizard.metrics" % "metrics-json" % "3.1.2",
       "io.dropwizard.metrics" % "metrics-jvm" % "3.1.2",
       "io.dropwizard.metrics" % "metrics-logback" % "3.1.2",
+      "io.prometheus" % "simpleclient_dropwizard" % "0.0.23",
+      "io.prometheus" % "simpleclient_common" % "0.0.23",
 
       "com.typesafe.slick" %% "slick" % "3.2.0",
       "com.typesafe.slick" %% "slick-hikaricp" % "3.2.0",

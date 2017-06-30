@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit
 
 import com.codahale.metrics.{ConsoleReporter, CsvReporter, JmxReporter, MetricRegistry}
 import com.typesafe.config.Config
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.dropwizard.DropwizardExports
 
 import scala.util.Try
 
@@ -41,6 +43,10 @@ object Reporter extends LazyLogging {
         .build(new File(outputDir)).start(period, TimeUnit.valueOf(unit))
     }
   }.getOrElse(() => Unit)
+
+  def prometheus(conf: Config, registry: MetricRegistry): () => Any = {
+    () => CollectorRegistry.defaultRegistry.register(new DropwizardExports(registry))
+  }
 
   def jmx(conf: Config, registry: MetricRegistry): () => Any = {
     () => JmxReporter.forRegistry(registry).build().start()

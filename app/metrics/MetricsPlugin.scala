@@ -19,6 +19,8 @@ class MetricsPlugin(metricsConfig: MetricsConfig) extends DefaultInstrumented {
 
   val mapper: ObjectMapper = new ObjectMapper()
 
+  val config = metricsConfig
+
   implicit def stringToTimeUnit(s: String): TimeUnit = TimeUnit.valueOf(s)
 
   def start(): Any = {
@@ -47,12 +49,13 @@ class MetricsPlugin(metricsConfig: MetricsConfig) extends DefaultInstrumented {
       Map(
         "console" -> Reporter.console _,
         "csv" -> Reporter.csv _,
-        "jmx" -> Reporter.jmx _
+        "jmx" -> Reporter.jmx _,
+        "prometheus" -> Reporter.prometheus _
       ).foreach {
-        case (name, fun) =>
+        case (name, runReporter) =>
           conf.get(name).foreach { cfg =>
             if (cfg.enabled) {
-              fun(cfg.config, registry)()
+              runReporter(cfg.config, registry)()
             }
           }
       }

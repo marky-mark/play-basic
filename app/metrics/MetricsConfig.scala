@@ -19,7 +19,7 @@ case class MetricsReportingConfig(enabled: Boolean, config: Config)
 
 object MetricsConfig {
   private val validUnits = Set("NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS")
-  private val reporters = Set("console", "csv", "jmx")
+  private val reporters = Set("console", "csv", "jmx", "prometheus")
 
   def apply(config: Config): MetricsConfig = {
     val specificConfig = config.getConfig("metrics")

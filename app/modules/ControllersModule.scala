@@ -27,6 +27,7 @@ trait ControllersModule { self: ServiceModule with MetricsModule with SlickBacke
 
   lazy val health = wire[HealthCheck]
   lazy val metrics = wire[Metrics]
+  lazy val prometheusMetrics = wire[PrometheusMetrics]
 
   lazy val info = wire[Infos]
 

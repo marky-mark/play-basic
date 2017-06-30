@@ -1,5 +1,6 @@
 GET     /health                                                 controllers.HealthCheck.get
 GET     /metrics                                                controllers.Metrics.metrics
+GET     /prometheus-metrics                                     controllers.PrometheusMetrics.metrics
 
 GET     /assets/*file                                           controllers.Assets.at(path="/public", file)
 GET     /ui                                                     controllers.Default.redirect(to="/assets/lib/swagger-ui/index.html?/url=/assets/swagger.json")
