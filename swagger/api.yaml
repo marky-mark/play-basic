@@ -82,6 +82,22 @@ paths:
             required: true
             schema:
               $ref: '#/definition/InfoBatch'
+        produces:
+          - application/problem+json
+        responses:
+          202:
+            description: Accepted for asynchronous completion - location URL provided in response header to get further information
+            schema:
+              $ref: '#/definitions/UpdateInfos'
+          400:
+            description: Bad Request
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/Problem'
+          429:
+            description: |
+              Too many requests - the caller has issued too many requests, and is being rate limited.
 
   /sales-channels/{sales_channel_id}/infos/{info_id}:
     put:
@@ -143,14 +159,14 @@ parameters:
       type: string
       required: false
 
-      TenantId:
-        name: X-Tenant-Id
-        description: |
-          A custom header for the identification of the tenant. The exact nature of tenants is yet to be defined WRT this API.
-        in: header
-        type: string
-        format: uuid
-        required: true
+    TenantId:
+      name: X-Tenant-Id
+      description: |
+        A custom header for the identification of the tenant. The exact nature of tenants is yet to be defined WRT this API.
+      in: header
+      type: string
+      format: uuid
+      required: true
 
     Authorization:
       name: Authorization
@@ -238,3 +254,25 @@ definitions:
         description: |
           A server-generated arbitrary identifier, that when present is associated with the specific instance of this
           problem. This identifier can be used to correlate the problem with its occurence in the service's logs, etc.
+
+  UpdateInfos:
+    type: object
+    required:
+      - update_information
+    properties:
+      update_information:
+        type: array
+        items:
+          $ref: '#/definitions/UpdateInfo'
+
+  UpdateInfo:
+    type: object
+    required:
+      - update_id
+      - info_id
+    properties:
+      update_id:
+        type: string
+        description: a generated unique id for each info update
+      enrichment_id:
+        type: string
