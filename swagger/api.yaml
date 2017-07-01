@@ -71,6 +71,18 @@ paths:
           403:
             description: Forbidden
 
+  /batch/sales-channels/{sales_channel_id}/infos:
+      post:
+        summary: Create Infos via batch
+        parameters:
+          - $ref: '#/parameters/SalesChannelId'
+          - $ref: '#/parameters/FlowId'
+          - name: body
+            in: body
+            required: true
+            schema:
+              $ref: '#/definition/InfoBatch'
+
   /sales-channels/{sales_channel_id}/infos/{info_id}:
     put:
       summary: Update an existing rule
