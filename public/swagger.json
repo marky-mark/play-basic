@@ -1,17 +1,13 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "title" : "Play Basic",
     "description" : "Storage of the Stuff\n",
     "version" : "0.1",
+    "title" : "Play Basic",
     "contact" : {
       "name" : "Mark Kelly",
       "email" : "mkelly28@tcd.ie"
     }
-  },
-  "externalDocs" : {
-    "description" : "Github repo",
-    "url" : "https://github.com/marky-mark/"
   },
   "basePath" : "/api",
   "schemes" : [ "https" ],
@@ -20,17 +16,33 @@
     "/sales-channels/{sales_channel_id}/infos" : {
       "get" : {
         "summary" : "Return all infos",
-        "parameters" : [ {
-          "$ref" : "#/parameters/SalesChannelId"
-        }, {
-          "$ref" : "#/parameters/FlowId"
-        }, {
-          "$ref" : "#/parameters/AcceptEncoding"
-        }, {
-          "$ref" : "#/parameters/IfModifiedSince"
-        } ],
-        "tags" : "Info API",
         "produces" : [ "application/json", "application/problem+json", "application/zip" ],
+        "parameters" : [ {
+          "name" : "sales_channel_id",
+          "in" : "path",
+          "description" : "Sales channel unique identifier from business partner service",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "If-Modified-Since",
+          "in" : "header",
+          "description" : "The last modification date of a category tree on the client side",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful",
@@ -54,20 +66,28 @@
       },
       "post" : {
         "summary" : "Create new Info",
+        "produces" : [ "application/json", "application/problem+json" ],
         "parameters" : [ {
-          "$ref" : "#/parameters/SalesChannelId"
+          "name" : "sales_channel_id",
+          "in" : "path",
+          "description" : "Sales channel unique identifier from business partner service",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
         }, {
-          "$ref" : "#/parameters/FlowId"
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
         }, {
-          "name" : "body",
           "in" : "body",
+          "name" : "body",
           "required" : true,
           "schema" : {
             "$ref" : "#/definitions/Info"
           }
         } ],
-        "tags" : "Info API",
-        "produces" : [ "application/json", "application/problem+json" ],
         "responses" : {
           "201" : {
             "description" : "Created"
@@ -84,54 +104,78 @@
         }
       }
     },
-    "/sales-channels/{sales_channel_id}/infos/{info_id}" : {
-      "put" : {
-        "summary" : "Update an existing rule",
+    "/batch/sales-channels/{sales_channel_id}/infos" : {
+      "post" : {
+        "summary" : "Create Infos via batch",
+        "produces" : [ "application/problem+json" ],
         "parameters" : [ {
-          "$ref" : "#/parameters/SalesChannelId"
+          "name" : "sales_channel_id",
+          "in" : "path",
+          "description" : "Sales channel unique identifier from business partner service",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
         }, {
-          "$ref" : "#/parameters/FlowId"
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
         }, {
-          "$ref" : "#/parameters/InfoId"
-        }, {
-          "name" : "body",
           "in" : "body",
+          "name" : "body",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/Info"
+            "$ref" : "#/definition/InfoBatch"
           }
         } ],
-        "tags" : "Info API",
-        "produces" : [ "application/json", "application/problem+json" ],
         "responses" : {
-          "200" : {
-            "description" : "Successful"
+          "202" : {
+            "description" : "Accepted for asynchronous completion - location URL provided in response header to get further information",
+            "schema" : {
+              "$ref" : "#/definitions/UpdateInfos"
+            }
           },
           "400" : {
-            "description" : "Bad Request"
+            "description" : "Bad Request",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Problem"
+              }
+            }
           },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
+          "429" : {
+            "description" : "Too many requests - the caller has issued too many requests, and is being rate limited.\n"
           }
         }
-      },
+      }
+    },
+    "/sales-channels/{sales_channel_id}/infos/{info_id}" : {
       "get" : {
         "summary" : "Return info by id",
-        "parameters" : [ {
-          "$ref" : "#/parameters/SalesChannelId"
-        }, {
-          "$ref" : "#/parameters/FlowId"
-        }, {
-          "$ref" : "#/parameters/InfoId"
-        } ],
-        "tags" : "Info API",
         "produces" : [ "application/json", "application/problem+json" ],
+        "parameters" : [ {
+          "name" : "sales_channel_id",
+          "in" : "path",
+          "description" : "Sales channel unique identifier from business partner service",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "info_id",
+          "in" : "path",
+          "description" : "A unique identifier. UUID identifying record",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful",
@@ -152,59 +196,62 @@
             "description" : "Not Found"
           }
         }
+      },
+      "put" : {
+        "summary" : "Update an existing rule",
+        "produces" : [ "application/json", "application/problem+json" ],
+        "parameters" : [ {
+          "name" : "sales_channel_id",
+          "in" : "path",
+          "description" : "Sales channel unique identifier from business partner service",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "info_id",
+          "in" : "path",
+          "description" : "A unique identifier. UUID identifying record",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Info"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
       }
-    }
-  },
-  "parameters" : {
-    "FlowId" : {
-      "name" : "X-Flow-Id",
-      "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
-      "in" : "header",
-      "type" : "string",
-      "required" : false
-    },
-    "Authorization" : {
-      "name" : "Authorization",
-      "description" : "Bearer authorization token",
-      "in" : "header",
-      "type" : "string",
-      "required" : true
-    },
-    "AcceptEncoding" : {
-      "name" : "Accept-Encoding",
-      "in" : "header",
-      "type" : "string",
-      "required" : false
-    },
-    "SalesChannelId" : {
-      "name" : "sales_channel_id",
-      "description" : "Sales channel unique identifier from business partner service",
-      "in" : "path",
-      "type" : "string",
-      "format" : "uuid",
-      "required" : true
-    },
-    "InfoId" : {
-      "name" : "info_id",
-      "description" : "A unique identifier. UUID identifying record",
-      "in" : "path",
-      "type" : "string",
-      "format" : "uuid",
-      "required" : true
-    },
-    "IfModifiedSince" : {
-      "name" : "If-Modified-Since",
-      "description" : "The last modification date of a category tree on the client side",
-      "in" : "header",
-      "type" : "string",
-      "format" : "date-time",
-      "required" : false
     }
   },
   "definitions" : {
     "Info" : {
       "type" : "object",
-      "required" : [ "name", "data", "meta" ],
+      "required" : [ "data", "meta", "name" ],
       "properties" : {
         "id" : {
           "type" : "string",
@@ -217,21 +264,22 @@
         },
         "data" : {
           "type" : "object",
-          "description" : "Json stuff"
+          "description" : "Json stuff",
+          "properties" : { }
         },
         "meta" : {
           "type" : "array",
           "description" : "array of things",
-          "minItems" : 0,
           "items" : {
             "type" : "string"
-          }
+          },
+          "minItems" : 0
         }
       }
     },
     "Problem" : {
       "type" : "object",
-      "required" : [ "title", "status", "detail" ],
+      "required" : [ "detail", "status", "title" ],
       "properties" : {
         "title" : {
           "type" : "string",
@@ -252,6 +300,89 @@
           "description" : "A server-generated arbitrary identifier, that when present is associated with the specific instance of this\nproblem. This identifier can be used to correlate the problem with its occurence in the service's logs, etc.\n"
         }
       }
+    },
+    "UpdateInfos" : {
+      "type" : "object",
+      "required" : [ "update_information" ],
+      "properties" : {
+        "update_information" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/UpdateInfo"
+          }
+        }
+      }
+    },
+    "UpdateInfo" : {
+      "type" : "object",
+      "required" : [ "update_id" ],
+      "properties" : {
+        "update_id" : {
+          "type" : "string",
+          "description" : "a generated unique id for each info update"
+        },
+        "enrichment_id" : {
+          "type" : "string"
+        }
+      }
     }
+  },
+  "parameters" : {
+    "FlowId" : {
+      "name" : "X-Flow-Id",
+      "in" : "header",
+      "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+      "required" : false,
+      "type" : "string"
+    },
+    "Authorization" : {
+      "name" : "Authorization",
+      "in" : "header",
+      "description" : "Bearer authorization token",
+      "required" : true,
+      "type" : "string"
+    },
+    "TenantId" : {
+      "name" : "X-Tenant-Id",
+      "in" : "header",
+      "description" : "A custom header for the identification of the tenant. The exact nature of tenants is yet to be defined WRT this API.\n",
+      "required" : true,
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "IfModifiedSince" : {
+      "name" : "If-Modified-Since",
+      "in" : "header",
+      "description" : "The last modification date of a category tree on the client side",
+      "required" : false,
+      "type" : "string",
+      "format" : "date-time"
+    },
+    "InfoId" : {
+      "name" : "info_id",
+      "in" : "path",
+      "description" : "A unique identifier. UUID identifying record",
+      "required" : true,
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "SalesChannelId" : {
+      "name" : "sales_channel_id",
+      "in" : "path",
+      "description" : "Sales channel unique identifier from business partner service",
+      "required" : true,
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "AcceptEncoding" : {
+      "name" : "Accept-Encoding",
+      "in" : "header",
+      "required" : false,
+      "type" : "string"
+    }
+  },
+  "externalDocs" : {
+    "description" : "Github repo",
+    "url" : "https://github.com/marky-mark/"
   }
 }

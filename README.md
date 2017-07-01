@@ -46,4 +46,11 @@ sbt run
 sbt test dockerComposeTest
 ```
 
+### Generate Swagger Json
+
+```bash
+brew install swagger-codegen
+swagger-codegen generate -i swagger/api.yaml -l swagger -o public/
+```
+
 
