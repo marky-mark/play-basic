@@ -7,5 +7,6 @@ GET     /ui                                                     controllers.Defa
 
 GET 	/api/sales-channels/:sales_channel_id/infos	            controllers.Infos.list(sales_channel_id: ids.SalesChannelId)
 POST    /api/sales-channels/:sales_channel_id/infos             controllers.Infos.post(sales_channel_id: ids.SalesChannelId)
+POST    /api/batch/sales-channels/:sales_channel_id/infos       controllers.Infos.postBatch(sales_channel_id: ids.SalesChannelId)
 PUT     /api/sales-channels/:sales_channel_id/infos/:info_id    controllers.Infos.put(sales_channel_id: ids.SalesChannelId, info_id: ids.InfoId)
 GET     /api/sales-channels/:sales_channel_id/infos/:info_id    controllers.Infos.get(sales_channel_id: ids.SalesChannelId, info_id: ids.InfoId)

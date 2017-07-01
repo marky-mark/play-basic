@@ -6,7 +6,7 @@ import com.markland.service.models.Problem
 import models.Models.{Problems, ServiceError, ValidationError => InternalValidationError}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, JsResult, Json}
-import play.api.mvc.Result
+import play.api.mvc.{Result, Results}
 import play.api.mvc.Results._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -54,6 +54,19 @@ object Response  {
 
   def fromFutureOption[T](onNone: => Result)(source: Future[Option[T]])(implicit ec: ExecutionContext) = EitherT[Future, Result, T] {
     source.map(_ \/> onNone)
+  }
+
+  def toProblem(error: HeaderParamError): Problem = {
+    val detail = error match {
+      case HeaderParams.MissingParam(name) => s"Missing header parameter '$name'"
+      case HeaderParams.EnumValue(message) => message
+      case HeaderParams.ConversionError(ex) => s"Failed to convert header parameter value: ${ex.getMessage}"
+    }
+    Problems.invalidInputProblem(detail)
+  }
+
+  def fromHeaderParam[T](either: scala.util.Either[HeaderParamError, T]) = EitherT[Future, Result, T] {
+    Future.successful(either.disjunction.leftMap(toProblem).leftMap(p => Results.BadRequest(Json.toJson(Seq(p)))))
   }
 
   def fromHeaderParamError[T](result: Either[HeaderParamError, T]): EitherT[Future, Result, T] = EitherT[Future, Result, T] {

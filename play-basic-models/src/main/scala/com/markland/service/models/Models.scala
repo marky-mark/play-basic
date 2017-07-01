@@ -11,7 +11,8 @@ case class Info(
   data: play.api.libs.json.JsObject,
   meta: Seq[String]
 )
-         
+
+case class BatchInfo(data: Seq[Info])
 
 case class Problem(
   title: String,

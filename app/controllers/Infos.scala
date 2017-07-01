@@ -4,9 +4,11 @@ import java.time.Clock
 import java.util.UUID
 
 import akka.actor.ActorSystem
+import com.markland.service.Id._
 import com.markland.service.HeaderParams.RequestHeaderOps
 import com.markland.service.models.JsonOps._
-import com.markland.service.models.{Info, Problem}
+import com.markland.service.models.{BatchInfo, Info, Problem}
+import com.markland.service.refs.RequestGroupRef
 import com.markland.service.tags.ids
 import com.markland.service.tags.ids.SalesChannelId
 import org.joda.time.DateTime
@@ -45,6 +47,20 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
       id                  <- Future.successful(UUID.randomUUID())                 |> fromFuture
       infoId              <- infoService.insert(salesChannelId, id, body)         |> fromFutureOption(InfoResponses.issueCreatingRule())
     } yield Created(Json.obj("id" -> infoId.toString))
+
+    response.merge
+  }
+
+  //3mb
+  val MaxPostSize = 3 * 1024 * 1024
+
+  def postBatch(salesChannelId: ids.SalesChannelId) = Action.async(parse.tolerantJson(MaxPostSize)) { implicit request =>
+
+    val response = for {
+      inGroupId      <- request.requestGroupId                                   |> fromHeaderParam
+      requestGroupId  = inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
+      body          <- request.body.validate[BatchInfo]                          |> fromJsResult
+    } yield Accepted(Json.toJson(body))
 
     response.merge
   }

@@ -77,12 +77,14 @@ paths:
         parameters:
           - $ref: '#/parameters/SalesChannelId'
           - $ref: '#/parameters/FlowId'
+          - $ref: '#/parameters/XRequestGroupId'
           - name: body
             in: body
             required: true
             schema:
-              $ref: '#/definition/InfoBatch'
+              $ref: '#/definitions/InfoBatch'
         produces:
+          - application/json
           - application/problem+json
         responses:
           202:
@@ -168,6 +170,18 @@ parameters:
       format: uuid
       required: true
 
+    XRequestGroupId:
+      name: X-Request-Group-Id
+      description: |
+        > Customer header to allow a client specify a group correlation Id that can be used across several updates.
+        > This can be used then to track summary information regarding all the requests in that group.
+        > It is the responsibility of the client to ensure the correct value is specified for requests in the same group, and it is also the client's responsibility to ensure correct uniqueness, etc., of this Identifier.
+        > This value is considered unique per tenant, multiple tenants can use the same value without collision.
+      in: header
+      type: string
+      format: uuid
+      required: false
+
     Authorization:
       name: Authorization
       description: Bearer authorization token
@@ -206,6 +220,16 @@ parameters:
       required: false
 
 definitions:
+
+  InfoBatch:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Info'
 
   Info:
     type: object

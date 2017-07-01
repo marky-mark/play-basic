@@ -21,16 +21,15 @@ object JsonOps {
     }
   }
 
-  
-
-  
   implicit val formatInfo: Format[Info] = (
     (__ \ "id").formatNullable[ids.InfoId] and
     (__ \ "name").format[String] and
     (__ \ "data").format[play.api.libs.json.JsObject] and
     (__ \ "meta").format[Seq[String]]
   )(Info.apply, unlift(Info.unapply))
-        
+
+  implicit val formatBatchInfo: Format[BatchInfo] =
+    (__ \ "data").format[Seq[Info]].inmap(BatchInfo(_), _.data)
 
   implicit val formatProblem: Format[Problem] = (
     (__ \ "title").format[String] and

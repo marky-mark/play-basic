@@ -3,8 +3,6 @@ package com.markland.service
 
 import models._
 import tags.ids._
-
-
 import play.api.mvc.RequestHeader
 
 import scala.util.control.Exception.nonFatalCatch
@@ -27,6 +25,13 @@ object HeaderParams {
 
     def ifModifiedSince(): Either[HeaderParamError, Option[String]] = {
       get("If-Modified-Since")
+    }
+
+    def requestGroupId(): Either[HeaderParamError, Option[RequestGroupId]] = {
+      get("X-Request-Group-Id").right.flatMap {
+        case Some(v) => nonFatalCatch.either(Option(java.util.UUID.fromString(v))).left.map(ConversionError(_))
+        case None => Right(None)
+      }.right.map(_.map(new RequestGroupId(_)))
     }
 
     private def get(name: String): Either[HeaderParamError, Option[String]] = {

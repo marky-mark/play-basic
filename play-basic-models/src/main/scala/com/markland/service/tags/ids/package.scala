@@ -5,4 +5,5 @@ package object ids {
   type InfoId = com.markland.service.Id[java.util.UUID, com.markland.service.models.Info]
   type SalesChannelId = com.markland.service.Id[java.util.UUID, com.markland.service.refs.SalesChannelRef]
   type TrackingId = com.markland.service.Id[java.util.UUID, com.markland.service.refs.TrackingRef]
+  type RequestGroupId = com.markland.service.Id[java.util.UUID, com.markland.service.refs.RequestGroupRef]
 }

@@ -107,7 +107,7 @@
     "/batch/sales-channels/{sales_channel_id}/infos" : {
       "post" : {
         "summary" : "Create Infos via batch",
-        "produces" : [ "application/problem+json" ],
+        "produces" : [ "application/json", "application/problem+json" ],
         "parameters" : [ {
           "name" : "sales_channel_id",
           "in" : "path",
@@ -122,11 +122,18 @@
           "required" : false,
           "type" : "string"
         }, {
+          "name" : "X-Request-Group-Id",
+          "in" : "header",
+          "description" : "> Customer header to allow a client specify a group correlation Id that can be used across several updates.\n> This can be used then to track summary information regarding all the requests in that group.\n> It is the responsibility of the client to ensure the correct value is specified for requests in the same group, and it is also the client's responsibility to ensure correct uniqueness, etc., of this Identifier.\n> This value is considered unique per tenant, multiple tenants can use the same value without collision.\n",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
           "in" : "body",
           "name" : "body",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definition/InfoBatch"
+            "$ref" : "#/definitions/InfoBatch"
           }
         } ],
         "responses" : {
@@ -249,6 +256,18 @@
     }
   },
   "definitions" : {
+    "InfoBatch" : {
+      "type" : "object",
+      "required" : [ "data" ],
+      "properties" : {
+        "data" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Info"
+          }
+        }
+      }
+    },
     "Info" : {
       "type" : "object",
       "required" : [ "data", "meta", "name" ],
@@ -371,6 +390,14 @@
       "in" : "path",
       "description" : "Sales channel unique identifier from business partner service",
       "required" : true,
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "XRequestGroupId" : {
+      "name" : "X-Request-Group-Id",
+      "in" : "header",
+      "description" : "> Customer header to allow a client specify a group correlation Id that can be used across several updates.\n> This can be used then to track summary information regarding all the requests in that group.\n> It is the responsibility of the client to ensure the correct value is specified for requests in the same group, and it is also the client's responsibility to ensure correct uniqueness, etc., of this Identifier.\n> This value is considered unique per tenant, multiple tenants can use the same value without collision.\n",
+      "required" : false,
       "type" : "string",
       "format" : "uuid"
     },
