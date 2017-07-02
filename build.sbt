@@ -96,6 +96,12 @@ lazy val root = (project in file("."))
       "io.prometheus" % "simpleclient_dropwizard" % "0.0.23",
       "io.prometheus" % "simpleclient_common" % "0.0.23",
 
+      "org.apache.kafka" %% "kafka" % "0.10.2.1" excludeAll (
+        ExclusionRule(organization = "org.slf4j"),
+        ExclusionRule(organization = "com.sun.jdmk"),
+        ExclusionRule(organization = "com.sun.jmx"),
+        ExclusionRule(organization = "javax.jms")),
+
       "com.typesafe.slick" %% "slick" % "3.2.0",
       "com.typesafe.slick" %% "slick-hikaricp" % "3.2.0",
       "com.github.tminglei" % "slick-pg_2.11" % "0.15.0-RC",

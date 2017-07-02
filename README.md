@@ -33,7 +33,7 @@ sbt dockerComposeUp
 #### Prerequisites
 
 * Postgres 9.4+
-* Follow flyway instructions 
+* Follow [flyway instructions](https://github.com/marky-mark/play-basic/tree/master/flyway) 
 
 
 ```bash

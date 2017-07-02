@@ -6,6 +6,10 @@ import org.scalatest.{BeforeAndAfterEach, Suite}
 import play.api.Configuration
 
 object DBProvidedIT {
+
+  println("Sleeping a bit....this is due to \"sbt dockerComposeTest\" starting the tests too early...sorry ¯\\_(ツ)_/¯")
+  Thread.sleep(10000)
+
   val config: Config = ConfigFactory.load("application.it.conf")
   val dbConfig = config.getConfig("database.postgres.db")
 
