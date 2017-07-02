@@ -79,11 +79,21 @@ lazy val playBasicClient = (project in file("play-basic-client"))
     libraryDependencies ++= playDep.map(_ % "provided") ++ playWsDep.map(_ % "provided")
   )
 
+lazy val protoSettings = Seq(
+  PB.targets in Compile := Seq(
+    scalapb.gen(flatPackage        = true,
+      javaConversions    = true,
+      singleLineToString = true) -> (sourceManaged in Compile).value / "proto_gen",
+    PB.gens.java                 -> (sourceManaged in Compile).value / "proto_gen"
+  )
+)
+
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
   .configs(IntegrationTest)
   .settings(customItSettings)
   .settings(commonSettings)
+  .settings(protoSettings)
   .settings(dockerSettings)
   .settings(
     name := "play-basic",
