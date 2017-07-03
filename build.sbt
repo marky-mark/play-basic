@@ -31,8 +31,8 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("snapshots"),
     //  Resolver.bintrayRepo("marklandcompany", "releases"),
     "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
-  ),
-  javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+  )
+//  javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
 )
 
 lazy val dockerSettings = Seq(
@@ -107,7 +107,7 @@ lazy val root = (project in file("."))
       "io.prometheus" % "simpleclient_common" % "0.0.23",
 
       "org.apache.kafka" %% "kafka" % "0.10.2.1" excludeAll (
-        ExclusionRule(organization = "org.slf4j"),
+//        ExclusionRule(organization = "org.slf4j"),
         ExclusionRule(organization = "com.sun.jdmk"),
         ExclusionRule(organization = "com.sun.jmx"),
         ExclusionRule(organization = "javax.jms")),
@@ -124,6 +124,7 @@ lazy val root = (project in file("."))
 
       "com.google.code.findbugs" % "jsr305" % "2.0.3",
 
+      "info.batey.kafka" % "kafka-unit" % "0.6" % "test",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
       "org.mockito" % "mockito-core" % "2.3.7" % "test,it",
       "com.h2database" % "h2" % "1.4.187" % "test",

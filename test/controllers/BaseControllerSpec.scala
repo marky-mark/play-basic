@@ -8,7 +8,11 @@ import play.api.test.Helpers._
 import setup.BaseSetup
 import scala.concurrent.Future
 
-class BaseControllerSpec extends FlatSpec with BaseSetup with Matchers with MockitoSugar with ScalaFutures {
+class BaseControllerSpec extends FlatSpec
+  with BaseSetup
+  with Matchers
+  with MockitoSugar
+  with ScalaFutures {
 
   def validateResponses(expectedResponse: Future[Result], response: Future[Result]) = {
     val expectedResponseBody = contentAsString(expectedResponse)
