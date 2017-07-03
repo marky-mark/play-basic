@@ -85,7 +85,8 @@ lazy val protoSettings = Seq(
       javaConversions    = true,
       singleLineToString = true) -> (sourceManaged in Compile).value / "proto_gen",
     PB.gens.java                 -> (sourceManaged in Compile).value / "proto_gen"
-  )
+  ),
+  PB.protoSources in Compile := Seq(file("protobuf"))
 )
 
 lazy val root = (project in file("."))
