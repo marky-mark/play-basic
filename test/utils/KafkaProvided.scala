@@ -2,7 +2,6 @@ package utils
 
 import com.typesafe.config.ConfigFactory
 import info.batey.kafka.unit.KafkaUnit
-import setup.BaseITSetup
 
 trait KafkaProvided {
   val config = ConfigFactory.load("application.test.conf")
