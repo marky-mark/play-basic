@@ -6,7 +6,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 
-class HealthCheckSpec extends BaseControllerSpec {
+class HealthCheckSpec extends BaseTestControllerSpec {
 
   val controller = new HealthCheck()
   val getRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

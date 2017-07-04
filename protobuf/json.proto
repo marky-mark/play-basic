@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package services.events;
+
+message JsValue {
+    oneof value {
+        JsNumber jsNumber = 1;
+        JsString jsString = 2;
+        JsBoolean jsBoolean = 3;
+        JsArray jsArray = 4;
+        JsObject jsObject = 5;
+    }
+}
+
+message JsNumber {
+    BigDecimal value = 1;
+}
+message JsString {
+    string value = 1;
+}
+message JsBoolean {
+    bool value = 1;
+}
+message JsArray {
+    JsValue values = 1;
+}
+message JsObjectEntry {
+    string label = 1;
+    JsValue value = 2;
+}
+message JsObject {
+    repeated JsObjectEntry entries = 1;
+}
+
+message BigDecimal {
+    int32 scale = 1;
+    BigInteger int_val = 2;
+}
+
+message BigInteger {
+    bytes value = 1;
+}

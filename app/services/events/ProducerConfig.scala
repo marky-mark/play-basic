@@ -1,7 +1,7 @@
 package services.events
 
 import com.typesafe.config.Config
-import org.apache.kafka.common.serialization.{Serializer, StringSerializer}
+import org.apache.kafka.common.serialization.{ByteArraySerializer, Serializer, StringSerializer}
 import org.apache.kafka.clients.producer.{ProducerConfig => KafkaProducerConfig}
 
 trait ProducerConfig {
@@ -14,6 +14,9 @@ class ProducerConfigImpl(name: String) {
 
   def stringProducer(config: Config): ProducerConfig =
     apply(config, name, new StringSerializer)
+
+  def protoProducer(config: Config): ProducerConfig =
+    apply(config, name, new ByteArraySerializer)
 
   def apply[T](configuration: Config, name: String, serializer: Serializer[T]): ProducerConfig = {
 

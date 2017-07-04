@@ -2,14 +2,14 @@ package utils
 
 import com.typesafe.config.ConfigFactory
 import info.batey.kafka.unit.KafkaUnit
-import setup.BaseSetup
+import setup.BaseITSetup
 
-trait KafkaProvided extends BaseSetup {
-  val config = ConfigFactory.load()
+trait KafkaProvided {
+  val config = ConfigFactory.load("application.test.conf")
 
   val zkPort = config.getString("kafka.zookeeper.servers").split(":")(1).toInt
   val kafkaPort = config.getString("kafka.bootstrap.servers").split(":")(1).toInt
-  val inboundTopic = config.getString("kafka.outbound-events.topic")
+  val inboundTopic = config.getString("kafka.internal-infos-events.topic")
 
   val kafka = new KafkaUnit(zkPort, kafkaPort)
 

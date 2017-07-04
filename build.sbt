@@ -31,8 +31,8 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("snapshots"),
     //  Resolver.bintrayRepo("marklandcompany", "releases"),
     "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
-  )
-//  javaOptions in Test += "-Dconfig.file=conf/application.test.conf"
+  ),
+  javaOptions in Test += s"-Dconfig.file=${baseDirectory.value}/test/resources/application.test.conf"
 )
 
 lazy val dockerSettings = Seq(

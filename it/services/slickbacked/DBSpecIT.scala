@@ -1,9 +1,9 @@
 package services.slickbacked
 
 import metrics.{MetricsConfig, MetricsServiceImpl}
-import setup.BaseSetup
+import setup.BaseITSetup
 
-class DBSpecIT extends InfoSpec with BaseSetup {
+class DBSpecIT extends InfoSpec with BaseITSetup {
 
   val metricService = new MetricsServiceImpl(MetricsConfig(configuration.underlying))
 

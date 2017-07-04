@@ -5,11 +5,11 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import setup.BaseSetup
+import setup.BaseTestSetup
 import scala.concurrent.Future
 
-class BaseControllerSpec extends FlatSpec
-  with BaseSetup
+class BaseTestControllerSpec extends FlatSpec
+  with BaseTestSetup
   with Matchers
   with MockitoSugar
   with ScalaFutures {

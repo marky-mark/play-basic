@@ -1,3 +1,17 @@
 syntax = "proto3";
 
 package services.events;
+
+import "json.proto";
+
+message Info {
+    string id = 1;
+    string name = 2;
+    JsObject data = 3;
+    repeated string meta = 4;
+}
+
+message BatchInfo {
+    string flow_id = 1;
+    repeated Info info = 2;
+}

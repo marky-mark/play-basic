@@ -5,12 +5,12 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
-import services.events.{InternalProducerConfig, StringEventProducer}
+import services.events._
 
 import scala.collection.JavaConverters._
 
 
-class StringEventProducerSpec extends FlatSpec
+class ProtoEventProducerSpec extends FlatSpec
   with Matchers
   with ScalaFutures
   with KafkaProvided
@@ -20,22 +20,25 @@ class StringEventProducerSpec extends FlatSpec
   implicit val materializer = ActorMaterializer()
   implicit val ec = actorSystem.dispatcher
 
-  val producerConfig = InternalProducerConfig.stringProducer(config)
+  val producerConfig = InternalProducerConfig.protoProducer(config)
 
   override val inboundTopic = producerConfig.topic
 
   override def beforeAll() = setupKafka()
   override def afterAll() = teardownKafka()
 
-  "StringEventProducer" should "produce a single event" in {
-    lazy val producer = new StringEventProducer(producerConfig)
+  "ProtoEventProducer" should "produce a single event" in {
+
+    lazy val producer = new ProtoEventProducer(producerConfig)
 
     val key = "partition-key"
-    val event = "dummy-event"
+    val event = BatchInfo("foo", Seq(Info("bar", "name", None, Seq("one")) ) )
 
-    producer.send(key, event).futureValue should === (())
+    producer.send(key, event.toByteArray).futureValue should === (())
     val result = kafka.retryingReadMessages(inboundTopic, 1).asScala
-    result contains event shouldBe true
+    result.toString contains "name" shouldBe true
+    result.toString contains "bar" shouldBe true
+    result.toString contains "one" shouldBe true
     result.size shouldBe 1
   }
 
