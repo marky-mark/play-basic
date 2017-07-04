@@ -1,9 +1,11 @@
 package utils
 
 import com.typesafe.config.ConfigFactory
+import com.typesafe.scalalogging.LazyLogging
 import info.batey.kafka.unit.KafkaUnit
+import org.apache.kafka.common.errors.TopicExistsException
 
-trait KafkaProvided {
+trait KafkaProvided extends LazyLogging {
   val config = ConfigFactory.load("application.test.conf")
 
   val zkPort = config.getString("kafka.zookeeper.servers").split(":")(1).toInt
@@ -13,8 +15,14 @@ trait KafkaProvided {
   val kafka = new KafkaUnit(zkPort, kafkaPort)
 
   def setupKafka() = {
+
     kafka.startup()
-    kafka.createTopic(inboundTopic)
+    try {
+      kafka.createTopic(inboundTopic)
+    }
+    catch {
+      case e: TopicExistsException => logger.error("topic already exists") //soz
+    }
   }
 
   def teardownKafka() = {
