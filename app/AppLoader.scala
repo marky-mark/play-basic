@@ -21,7 +21,13 @@ trait ApplicationModules extends BuiltInComponents
   with ServiceModule
   with MetricsModule
   with SlickBackedModule
-  with ControllersModule {
+  with ControllersModule
+  with EventsModule {
+
+  /**
+    * could do val config = ConfigFactory.load()
+    * and then def config = Config in each Module
+    */
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   lazy val prefix: String = "/"
