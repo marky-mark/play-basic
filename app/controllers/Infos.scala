@@ -16,13 +16,14 @@ import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.InfoService
+import services.events.ProtoEventProducer
 import services.slickbacked.SalesChannelRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.Scalaz._
 import scalaz._
 
-class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository)
+class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository, internalEventProducer: ProtoEventProducer)
            (implicit val ec: ExecutionContext, val clock: Clock) extends Controller {
 
   import Response._
