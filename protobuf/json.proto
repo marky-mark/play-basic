@@ -22,7 +22,7 @@ message JsBoolean {
     bool value = 1;
 }
 message JsArray {
-    JsValue values = 1;
+    repeated JsValue values = 1;
 }
 message JsObjectEntry {
     string label = 1;
