@@ -32,7 +32,7 @@ class ProtoEventProducerSpec extends FlatSpec
     lazy val producer = new ProtoEventProducer(producerConfig)
 
     val key = "partition-key"
-    val event = BatchInfo("foo", Seq(Info("bar", "name", None, Seq("one")) ) )
+    val event: BatchInfo = BatchInfo("foo", Seq(Info("bar", "name", None, Seq("one")) ) )
 
     producer.send(key, event.toByteArray).futureValue should === (())
     val result = kafka.retryingReadMessages(inboundTopic, 1).asScala

@@ -61,6 +61,8 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
       inGroupId      <- request.requestGroupId                                   |> fromHeaderParam
       requestGroupId  = inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
       body          <- request.body.validate[BatchInfo]                          |> fromJsResult
+      bodyTransformed =
+      _ <- internalEventProducer.send()
     } yield Accepted(Json.toJson(body))
 
     response.merge
