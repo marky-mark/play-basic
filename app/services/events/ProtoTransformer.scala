@@ -3,7 +3,7 @@ package services.events
 import com.google.protobuf.ByteString
 import com.markland.service.models.{BatchInfo => ModelBatchInfo, Info => ModelInfo}
 import play.api.libs.json.{JsArray => PlayJsArray, JsValue => PlayJsValue, JsObject => PlayJsonObject,
-JsString => PlayJsString, JsNull, JsNumber => PlayJsNumber, JsBoolean => PlayJsBoolean, JsArray => PlayJsArray}
+JsString => PlayJsString, JsNull, JsNumber => PlayJsNumber, JsBoolean => PlayJsBoolean}
 
 object ProtoTransformer {
 
