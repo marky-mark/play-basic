@@ -12,9 +12,8 @@ object ProtoTransformer {
   }
 
   private def infosToproto(infos: Seq[ModelInfo]): Seq[Info] = {
-    infos.map(info => services.events.Info(info.id match {
-      case Some(i) => i.value.toString
-    }, info.name, Some(toInternalJsObject(info.data)), info.meta ))
+    infos.flatMap(info => info.id.map(i =>
+      services.events.Info(i.value.toString, info.name, Some(toInternalJsObject(info.data)), info.meta )))
   }
 
   private def toInternalJsObject(jsObject: PlayJsonObject): JsObject = {
