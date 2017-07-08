@@ -12,7 +12,7 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
   def dataJson = play.api.libs.json.Json.parse(
     s"""
        |{
-       |   "foo": "bar"
+       |   "name": "val"
        |
        |}
     """.stripMargin
@@ -26,5 +26,6 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
     protoBatch.flowId should === ("flowId")
     protoBatch.info.head.id should === (testInfo.id.get.value.toString)
     protoBatch.info.head.meta should === (testInfo.meta)
+    protoBatch.info.head.data.get.entries.head.value.get.value.jsString.get.value should === ("val")
   }
 }
