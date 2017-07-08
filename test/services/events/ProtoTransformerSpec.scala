@@ -24,5 +24,7 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
     val protoBatch: BatchInfo = ProtoTransformer.toProto("flowId", batchInfo)
 
     protoBatch.flowId should === ("flowId")
+    protoBatch.info.head.id should === (testInfo.id.get.value.toString)
+    protoBatch.info.head.meta should === (testInfo.meta)
   }
 }
