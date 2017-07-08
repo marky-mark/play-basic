@@ -322,25 +322,8 @@
     },
     "UpdateInfos" : {
       "type" : "object",
-      "required" : [ "update_information" ],
       "properties" : {
-        "update_information" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/UpdateInfo"
-          }
-        }
-      }
-    },
-    "UpdateInfo" : {
-      "type" : "object",
-      "required" : [ "update_id" ],
-      "properties" : {
-        "update_id" : {
-          "type" : "string",
-          "description" : "a generated unique id for each info update"
-        },
-        "enrichment_id" : {
+        "tracking_id" : {
           "type" : "string"
         }
       }

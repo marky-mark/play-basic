@@ -12,6 +12,10 @@ case class Info(
   meta: Seq[String]
 )
 
+case class UpdateInfos(
+  trackingId: ids.BatchUpdateId
+)
+
 case class BatchInfo(data: Seq[Info])
 
 case class Problem(

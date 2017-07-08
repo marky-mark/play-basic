@@ -37,6 +37,9 @@ object JsonOps {
     (__ \ "detail").format[String] and
     (__ \ "tracking_id").formatNullable[ids.TrackingId]
   )(Problem.apply, unlift(Problem.unapply))
+
+  implicit val formatUpdateInfos: Format[UpdateInfos] =
+    (__ \ "tracking_id").format[ids.BatchUpdateId].inmap(UpdateInfos(_), _.trackingId)
         
 
   private def createEnumFormat[T <: NamedEnum](fn: String => Either[EnumError, T]): Format[T] = {

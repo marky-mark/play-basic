@@ -6,11 +6,12 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import com.markland.service.Id._
 import com.markland.service.HeaderParams.RequestHeaderOps
+import com.markland.service.Id
 import com.markland.service.models.JsonOps._
-import com.markland.service.models.{BatchInfo, Info, Problem}
+import com.markland.service.models.{BatchInfo, Info, Problem, UpdateInfos}
 import com.markland.service.refs.RequestGroupRef
 import com.markland.service.tags.ids
-import com.markland.service.tags.ids.SalesChannelId
+import com.markland.service.tags.ids.{BatchUpdateId, RequestGroupId, SalesChannelId}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{JsValue, Json}
@@ -59,12 +60,13 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
 
     val response = for {
       inGroupId       <-  request.requestGroupId                                                                 |> fromHeaderParam
-      requestGroupId  =   inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
+      requestGroupId =    inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
       body            <-  request.body.validate[BatchInfo]                                                       |> fromJsResult
       flowId          <-  request.flowId                                                                         |> fromHeaderParam
-      bodyTransformed =   ProtoTransformer.toProto(flowId.get.value, body)
+      trackingId      <-  Future.successful(UUID.randomUUID().id[UpdateInfos])                                   |> fromFuture
+      bodyTransformed =   ProtoTransformer.toProto(flowId, body)
       _               <-  internalEventProducer.send(requestGroupId.value.toString, bodyTransformed.toByteArray) |> fromFuture
-    } yield Accepted(Json.toJson(body))
+    } yield Accepted(Json.toJson(UpdateInfos(trackingId)))
 
     response.merge
   }

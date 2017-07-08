@@ -2,13 +2,13 @@ package services.events
 
 import com.google.protobuf.ByteString
 import com.markland.service.models.{BatchInfo => ModelBatchInfo, Info => ModelInfo}
-import play.api.libs.json.{JsArray => PlayJsArray, JsValue => PlayJsValue, JsObject => PlayJsonObject,
-JsString => PlayJsString, JsNull, JsNumber => PlayJsNumber, JsBoolean => PlayJsBoolean}
+import com.markland.service.tags.ids._
+import play.api.libs.json.{JsNull, JsArray => PlayJsArray, JsBoolean => PlayJsBoolean, JsNumber => PlayJsNumber, JsObject => PlayJsonObject, JsString => PlayJsString, JsValue => PlayJsValue}
 
 object ProtoTransformer {
 
-  def toProto(flowId: String, batchInfo: ModelBatchInfo): BatchInfo = {
-    services.events.BatchInfo(flowId, infosToproto(batchInfo.data))
+  def toProto(flowId: Option[FlowId], batchInfo: ModelBatchInfo): BatchInfo = {
+    services.events.BatchInfo(flowId.map(_.value).getOrElse(""), infosToproto(batchInfo.data))
   }
 
   private def infosToproto(infos: Seq[ModelInfo]): Seq[Info] = {
