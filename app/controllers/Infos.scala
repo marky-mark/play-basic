@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.InfoService
-import services.events.ProtoEventProducer
+import services.events.{ProtoEventProducer, ProtoTransformer}
 import services.slickbacked.SalesChannelRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,11 +58,12 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
   def postBatch(salesChannelId: ids.SalesChannelId) = Action.async(parse.tolerantJson(MaxPostSize)) { implicit request =>
 
     val response = for {
-      inGroupId      <- request.requestGroupId                                   |> fromHeaderParam
-      requestGroupId  = inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
-      body          <- request.body.validate[BatchInfo]                          |> fromJsResult
-//      bodyTransformed =
-//      _ <- internalEventProducer.send()
+      inGroupId       <-  request.requestGroupId                                                                 |> fromHeaderParam
+      requestGroupId  =   inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
+      body            <-  request.body.validate[BatchInfo]                                                       |> fromJsResult
+      flowId          <-  request.flowId                                                                         |> fromHeaderParam
+      bodyTransformed =   ProtoTransformer.toProto(flowId.get.value, body)
+      _               <-  internalEventProducer.send(requestGroupId.value.toString, bodyTransformed.toByteArray) |> fromFuture
     } yield Accepted(Json.toJson(body))
 
     response.merge
