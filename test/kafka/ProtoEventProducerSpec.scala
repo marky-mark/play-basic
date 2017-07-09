@@ -8,6 +8,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import services.events._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 
 class ProtoEventProducerSpec extends FlatSpec
@@ -35,11 +36,9 @@ class ProtoEventProducerSpec extends FlatSpec
     val event: BatchInfo = BatchInfo("foo", Seq(Info("bar", "name", None, Seq("one")) ) )
 
     producer.send(key, event.toByteArray).futureValue should === (())
-    val result = kafka.retryingReadMessages(inboundTopic, 1).asScala
-    result.toString contains "name" shouldBe true
-    result.toString contains "bar" shouldBe true
-    result.toString contains "one" shouldBe true
-    result.size shouldBe 1
+    val result: mutable.Buffer[String] = kafka.retryingReadMessages(inboundTopic, 1).asScala
+    val consumed = result.map(_.toCharArray.map(_.toByte)).map(BatchInfo.parseFrom)
+    consumed.head should === (event)
   }
 
 }
