@@ -13,6 +13,8 @@ services:
 
   zookeeper:
     image: wurstmeister/zookeeper
+    ports:
+      - 2181:2181
 
   kafka:
     image: wurstmeister/kafka:0.10.2.1
@@ -24,6 +26,8 @@ services:
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_CREATE_TOPICS: "internal-infos-events_v1:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    ports:
+      - 9092:9092
 
   schema:
       image: gsengun/flyway-postgres:1.4
@@ -34,8 +38,9 @@ services:
         - postgres-db
 
   play-basic:
-    #  build: ./target/docker/stage // not supported by sbt docker compose
-    image: markymark1/play-basic:0.0.3-23-g2653fb2
+      # not supported by sbt docker compose
+#      build: ./target/docker/stage
+    image: markymark1/play-basic:0.1.0-SNAPSHOT
     depends_on:
       - schema
       - postgres-db

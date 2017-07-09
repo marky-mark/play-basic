@@ -16,7 +16,7 @@ trait InfoSpec extends FlatSpec
   with Eventually
   with DBProvidedIT {
 
-  implicit val pc: PatienceConfig = PatienceConfig(Span(5, Seconds))
+  implicit val pc: PatienceConfig = PatienceConfig(Span(10, Seconds))
   val waitDuration = 60 seconds
 
   val baseSalesChannelId: UUID = UUID.fromString("75506ce9-ece6-4835-bbb1-83613c326be7")

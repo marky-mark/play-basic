@@ -2,7 +2,7 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import api.client.ServiceInfoClient
-import com.markland.service.models.Info
+import com.markland.service.models.{BatchInfo, Info}
 import com.markland.service.models.JsonOps._
 import com.markland.service.refs.{FlowRef, SalesChannelRef}
 import com.markland.service.tags.ids.FlowId
@@ -16,7 +16,8 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Success, Try}
 import scalaj.http.{Http, HttpResponse}
-import scalaz._, Scalaz._
+import scalaz._
+import Scalaz._
 
 class BasicAppSpec extends InfoSpec {
 
@@ -74,6 +75,27 @@ class BasicAppSpec extends InfoSpec {
         }
         case _ =>
       }
+    }
+  }
+
+  it should "Batch requests onto a bus" in {
+    def dataJson = Json.parse("{\"val\":\"ue\"}")
+    def dataJson2 = Json.parse("{\"val2\":\"ue2\"}")
+
+    eventually {
+      val infoSeq: Seq[Info] = Seq(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("meta")),
+        new Info(name = "foo2", data = dataJson2.as[JsObject], meta = Seq("meta2")))
+      val infoToCreate = Json.toJson(new BatchInfo(infoSeq)).toString()
+      val output: HttpResponse[String] = Http(s"http://$baseUrl:9000/api/batch/sales-channels/$baseSalesChannelId/infos")
+        .postData(infoToCreate).asString
+
+      output.code shouldBe 202
+      val result = (Json.parse(output.body) \ "tracking_id").as[String]
+      println(s"Info created Id - $result")
+
+      //will throw an exeception if not a UUID
+      val id = UUID.fromString(result)
+      id shouldBe a [UUID]
     }
   }
 

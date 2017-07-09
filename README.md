@@ -46,11 +46,22 @@ sbt run
 sbt test dockerComposeTest
 ```
 
+If the integration tests are broken and you want to debug [see here](https://github.com/Tapad/sbt-docker-compose)
+
 ### Generate Swagger Json
 
 ```bash
 brew install swagger-codegen
 swagger-codegen generate -i swagger/api.yaml -l swagger -o public/
 ```
+
+### Docker
+
+Clear out old docker images [stack overflow](https://stackoverflow.com/questions/32723111/how-to-remove-old-and-unused-docker-images)
+
+```bash
+docker rmi $(docker images --filter "dangling=true" -q --no-trunc) 
+```
+
 
 
