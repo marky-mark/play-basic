@@ -9,7 +9,8 @@ case class Info(
   id: Option[ids.InfoId] = None,
   name: String,
   data: play.api.libs.json.JsObject,
-  meta: Seq[String]
+  meta: Seq[String],
+  status: InfoStatus
 )
 
 case class UpdateInfos(

@@ -1,0 +1,1 @@
+ALTER TABLE info ADD status text not null default 'enabled';

@@ -12,7 +12,8 @@ case class InfoSlick(id: UUID,
                      data: JsValue,
                      meta: List[String],
                      lastModified: Timestamp,
-                     salesChannelId: UUID)
+                     salesChannelId: UUID,
+                     status: String)
 
 class DataModel(val driver: ExtendedPostgresDriver) {
 
@@ -25,10 +26,11 @@ class DataModel(val driver: ExtendedPostgresDriver) {
     def meta = column[List[String]]("meta")
     def lastModified = column[Timestamp]("last_modified")
     def salesChannelId = column[UUID]("sales_channel_id")
+    def status = column[String]("status")
 
     def pk = primaryKey("info_pkey", id)
     def fk = foreignKey("info_fkey", salesChannelId, salesChannels)(_.id, onDelete = ForeignKeyAction.Cascade)
-    def * = (id, name, data, meta, lastModified, salesChannelId) <> (InfoSlick.tupled, InfoSlick.unapply _)
+    def * = (id, name, data, meta, lastModified, salesChannelId, status) <> (InfoSlick.tupled, InfoSlick.unapply _)
   }
 
   case class SalesChannelsTable (tag: Tag) extends Table[SalesChannelsSlick](tag, "sales_channels") {

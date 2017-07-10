@@ -237,6 +237,7 @@ definitions:
       - name
       - data
       - meta
+      - status
     properties:
       id:
         type: string
@@ -254,6 +255,11 @@ definitions:
         minItems: 0
         items:
           type: string
+      status:
+        type: string
+        enum:
+          - active
+          - inactive
 
   Problem:
     type: object

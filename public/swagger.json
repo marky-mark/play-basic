@@ -270,7 +270,7 @@
     },
     "Info" : {
       "type" : "object",
-      "required" : [ "data", "meta", "name" ],
+      "required" : [ "data", "meta", "name", "status" ],
       "properties" : {
         "id" : {
           "type" : "string",
@@ -293,6 +293,10 @@
             "type" : "string"
           },
           "minItems" : 0
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "active", "inactive" ]
         }
       }
     },

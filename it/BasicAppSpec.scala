@@ -2,7 +2,7 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import api.client.ServiceInfoClient
-import com.markland.service.models.{BatchInfo, Info}
+import com.markland.service.models.{BatchInfo, Info, InfoStatusEnum}
 import com.markland.service.models.JsonOps._
 import com.markland.service.refs.{FlowRef, SalesChannelRef}
 import com.markland.service.tags.ids.FlowId
@@ -38,7 +38,7 @@ class BasicAppSpec extends InfoSpec {
     def dataJson = Json.parse("{\"foo\":\"bar\"}")
 
     eventually {
-      val infoToCreate = Json.toJson(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("foo"))).toString()
+      val infoToCreate = Json.toJson(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("foo"), status = InfoStatusEnum.Active)).toString()
       val output: HttpResponse[String] = Http(s"http://$baseUrl:9000/api/sales-channels/$baseSalesChannelId/infos")
         .postData(infoToCreate).asString
 
@@ -83,8 +83,8 @@ class BasicAppSpec extends InfoSpec {
     def dataJson2 = Json.parse("{\"val2\":\"ue2\"}")
 
     eventually {
-      val infoSeq: Seq[Info] = Seq(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("meta")),
-        new Info(name = "foo2", data = dataJson2.as[JsObject], meta = Seq("meta2")))
+      val infoSeq: Seq[Info] = Seq(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("meta"), status = InfoStatusEnum.Active),
+        new Info(name = "foo2", data = dataJson2.as[JsObject], meta = Seq("meta2"), status = InfoStatusEnum.Inactive))
       val infoToCreate = Json.toJson(new BatchInfo(infoSeq)).toString()
       val output: HttpResponse[String] = Http(s"http://$baseUrl:9000/api/batch/sales-channels/$baseSalesChannelId/infos")
         .postData(infoToCreate).asString

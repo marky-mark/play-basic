@@ -1,7 +1,6 @@
 package com.markland.service.models
 
 import com.markland.service.tags._
-
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -21,11 +20,14 @@ object JsonOps {
     }
   }
 
+  implicit val infoStatusEnumFormat = createEnumFormat(InfoStatusEnum.apply)
+
   implicit val formatInfo: Format[Info] = (
     (__ \ "id").formatNullable[ids.InfoId] and
     (__ \ "name").format[String] and
     (__ \ "data").format[play.api.libs.json.JsObject] and
-    (__ \ "meta").format[Seq[String]]
+    (__ \ "meta").format[Seq[String]] and
+    (__ \ "status").format[InfoStatus]
   )(Info.apply, unlift(Info.unapply))
 
   implicit val formatBatchInfo: Format[BatchInfo] =
