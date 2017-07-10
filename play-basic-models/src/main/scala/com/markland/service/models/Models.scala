@@ -10,7 +10,8 @@ case class Info(
   name: String,
   data: play.api.libs.json.JsObject,
   meta: Seq[String],
-  status: InfoStatus
+  status: InfoStatus,
+  lastModified: Option[org.joda.time.DateTime] = None
 )
 
 case class UpdateInfos(

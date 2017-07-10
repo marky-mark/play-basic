@@ -17,6 +17,8 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.std.either._
 
+import services.DateTimeHelper._
+
 trait InfoService {
   def list(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Seq[Info]]
 
@@ -79,6 +81,7 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with L
           name = i.name,
           data = i.data.as[JsObject],
           meta = i.meta,
-          status = InfoStatusEnum(i.status).disjunction.valueOr(e => sys.error(e.message)))))
+          status = InfoStatusEnum(i.status).disjunction.valueOr(e => sys.error(e.message)),
+          lastModified = Some(i.lastModified.toDateTime))))
     }
 }

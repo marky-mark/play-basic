@@ -297,6 +297,10 @@
         "status" : {
           "type" : "string",
           "enum" : [ "active", "inactive" ]
+        },
+        "last_modified" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },

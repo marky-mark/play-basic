@@ -260,6 +260,9 @@ definitions:
         enum:
           - active
           - inactive
+      last_modified:
+        type: string
+        format: date-time
 
   Problem:
     type: object

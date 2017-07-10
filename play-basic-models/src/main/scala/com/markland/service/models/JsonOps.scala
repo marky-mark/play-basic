@@ -27,8 +27,9 @@ object JsonOps {
     (__ \ "name").format[String] and
     (__ \ "data").format[play.api.libs.json.JsObject] and
     (__ \ "meta").format[Seq[String]] and
-    (__ \ "status").format[InfoStatus]
-  )(Info.apply, unlift(Info.unapply))
+    (__ \ "status").format[InfoStatus] and
+    (__ \ "last_modified").formatNullable[String].inmap[Option[org.joda.time.DateTime]](st => if (st != None) Some(org.joda.time.format.ISODateTimeFormat.dateTime().parseDateTime(st.get)) else None, da => da.map(org.joda.time.format.ISODateTimeFormat.dateTime().print))
+    )(Info.apply, unlift(Info.unapply))
 
   implicit val formatBatchInfo: Format[BatchInfo] =
     (__ \ "data").format[Seq[Info]].inmap(BatchInfo(_), _.data)
