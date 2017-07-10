@@ -21,7 +21,8 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
   )
 
   it should "Transform to ProtoBuf Object" in {
-    val testInfo = ModelInfo(Some(UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220").id), "bar", dataJson.as[PlayJsonObject], List("foo", "bar"), InfoStatusEnum.Active)
+    val testInfo = ModelInfo(Some(UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220").id), "bar",
+      dataJson.as[PlayJsonObject], List("foo", "bar"), InfoStatusEnum.Inactive)
     val batchInfo = ModelBatchInfo(Seq(testInfo))
     val flowId: FlowId = UUID.randomUUID().toString.id[FlowRef]
     val protoBatch: BatchInfo = ProtoTransformer.toProto(Some(flowId), batchInfo)
@@ -29,6 +30,8 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
     protoBatch.flowId should === (flowId.value)
     protoBatch.info.head.id should === (testInfo.id.get.value.toString)
     protoBatch.info.head.meta should === (testInfo.meta)
+    protoBatch.info.head.status.isActive should === (false)
+    protoBatch.info.head.status.isActive should not be true
     protoBatch.info.head.data.get.entries.head.value.get.value.jsString.get.value should === ("val")
   }
 }

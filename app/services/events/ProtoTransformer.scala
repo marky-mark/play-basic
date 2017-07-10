@@ -1,9 +1,12 @@
 package services.events
 
 import com.google.protobuf.ByteString
-import com.markland.service.models.{BatchInfo => ModelBatchInfo, Info => ModelInfo}
+import com.markland.service.models.{BatchInfo => ModelBatchInfo, Info => ModelInfo, InfoStatusEnum => ModelInfoStatusEnum}
 import com.markland.service.tags.ids._
 import play.api.libs.json.{JsNull, JsArray => PlayJsArray, JsBoolean => PlayJsBoolean, JsNumber => PlayJsNumber, JsObject => PlayJsonObject, JsString => PlayJsString, JsValue => PlayJsValue}
+
+import scalaz.\/
+import scalaz.syntax.either._
 
 object ProtoTransformer {
 
@@ -13,7 +16,14 @@ object ProtoTransformer {
 
   private def infosToproto(infos: Seq[ModelInfo]): Seq[Info] = {
     infos.flatMap(info => info.id.map(i =>
-      services.events.Info(i.value.toString, info.name, Some(toInternalJsObject(info.data)), info.meta )))
+      services.events.Info(i.value.toString, info.name, Some(toInternalJsObject(info.data)), info.meta,
+        toInternalProductStatus(info.status).getOrElse(InfoStatus.ACTIVE) )))
+  }
+
+  private def toInternalProductStatus(status: ModelInfoStatusEnum.InfoStatus): String \/ InfoStatus = status match {
+    case ModelInfoStatusEnum.Active => InfoStatus.ACTIVE.right
+    case ModelInfoStatusEnum.Inactive => InfoStatus.INACTIVE.right
+    case _ => s"Invalid Internal Info Status: $status, can't encode".left
   }
 
   private def toInternalJsObject(jsObject: PlayJsonObject): JsObject = {
