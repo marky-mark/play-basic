@@ -13,6 +13,48 @@
   "schemes" : [ "https" ],
   "produces" : [ "application/json" ],
   "paths" : {
+    "/infos" : {
+      "get" : {
+        "summary" : "Find infos based on a query",
+        "description" : "Find based on a query\n",
+        "produces" : [ "application/x.info-page+json" ],
+        "parameters" : [ {
+          "name" : "X-Flow-Id",
+          "in" : "header",
+          "description" : "A custom header that will be passed onto any further requests and can be used for diagnosing.\n",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "maximum" : 1000,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "next_cursor",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sales_channel_id",
+          "in" : "query",
+          "description" : "ID of the entity",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful",
+            "schema" : {
+              "$ref" : "#/definitions/InfoPage"
+            }
+          }
+        }
+      }
+    },
     "/sales-channels/{sales_channel_id}/infos" : {
       "get" : {
         "summary" : "Return all infos",
@@ -205,7 +247,7 @@
         }
       },
       "put" : {
-        "summary" : "Update an existing rule",
+        "summary" : "Update an existing info",
         "produces" : [ "application/json", "application/problem+json" ],
         "parameters" : [ {
           "name" : "sales_channel_id",
@@ -304,6 +346,30 @@
         }
       }
     },
+    "Page" : {
+      "type" : "object",
+      "properties" : {
+        "next" : {
+          "$ref" : "#/definitions/Page_next"
+        }
+      }
+    },
+    "InfoPage" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Page"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Info"
+            }
+          }
+        }
+      } ]
+    },
     "Problem" : {
       "type" : "object",
       "required" : [ "detail", "status", "title" ],
@@ -335,6 +401,18 @@
           "type" : "string"
         }
       }
+    },
+    "Page_next" : {
+      "required" : [ "cursor", "href" ],
+      "properties" : {
+        "cursor" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        }
+      },
+      "description" : "Details of the next page, if any. The cursor is the appropriate value to use as next_cursor in a fetch. the \"href\" contains a complete URL."
     }
   },
   "parameters" : {
@@ -360,6 +438,12 @@
       "type" : "string",
       "format" : "uuid"
     },
+    "PagingNextCursor" : {
+      "name" : "next_cursor",
+      "in" : "query",
+      "required" : false,
+      "type" : "string"
+    },
     "IfModifiedSince" : {
       "name" : "If-Modified-Since",
       "in" : "header",
@@ -375,6 +459,16 @@
       "required" : true,
       "type" : "string",
       "format" : "uuid"
+    },
+    "QueryPagingLimit" : {
+      "name" : "limit",
+      "in" : "query",
+      "required" : false,
+      "type" : "integer",
+      "default" : 100,
+      "maximum" : 1000,
+      "minimum" : 1,
+      "format" : "int32"
     },
     "SalesChannelId" : {
       "name" : "sales_channel_id",

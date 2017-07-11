@@ -10,6 +10,7 @@ import com.markland.service.Id
 import com.markland.service.models.JsonOps._
 import com.markland.service.models.{BatchInfo, Info, Problem, UpdateInfos}
 import com.markland.service.refs.RequestGroupRef
+import com.markland.service.tags.cursors.PageNextCursor
 import com.markland.service.tags.ids
 import com.markland.service.tags.ids.{BatchUpdateId, RequestGroupId, SalesChannelId}
 import org.joda.time.DateTime
@@ -28,6 +29,12 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
            (implicit val ec: ExecutionContext, val clock: Clock) extends Controller {
 
   import Response._
+
+  def query(limit: Int,
+            nextCursor: Option[PageNextCursor] = None,
+            ownerId: Option[SalesChannelId] = None) = Action.async { implicit request =>
+    Future.successful(Ok(Json.obj()))
+  }
 
   def list(salesChannelId: ids.SalesChannelId) = Action.async { implicit request =>
     val response = for {

@@ -20,6 +20,28 @@ produces:
 
 paths:
 
+  /infos:
+      get:
+        summary: Find infos based on a query
+        description: |
+          Find based on a query
+        parameters:
+          - $ref: '#/parameters/FlowId'
+          - $ref: '#/parameters/QueryPagingLimit'
+          - $ref: '#/parameters/PagingNextCursor'
+          - name: sales_channel_id
+            description: ID of the entity
+            in: query
+            type: string
+            required: false
+        produces:
+          - application/x.info-page+json
+        responses:
+          200:
+            description: Successful
+            schema:
+              $ref: '#/definitions/InfoPage'
+
   /sales-channels/{sales_channel_id}/infos:
       get:
         summary: Return all infos
@@ -103,7 +125,7 @@ paths:
 
   /sales-channels/{sales_channel_id}/infos/{info_id}:
     put:
-      summary: Update an existing rule
+      summary: Update an existing info
       parameters:
         - $ref: '#/parameters/SalesChannelId'
         - $ref: '#/parameters/FlowId'
@@ -219,6 +241,22 @@ parameters:
       format: date-time
       required: false
 
+    QueryPagingLimit:
+      name: limit
+      in: query
+      type: integer
+      format: int32
+      required: false
+      minimum: 1
+      default: 100
+      maximum: 1000
+
+    PagingNextCursor:
+      name: next_cursor
+      in: query
+      type: string
+      required: false
+
 definitions:
 
   InfoBatch:
@@ -263,6 +301,33 @@ definitions:
       last_modified:
         type: string
         format: date-time
+
+  Page:
+    type: object
+    properties:
+      next:
+        type: object
+        description: Details of the next page, if any. The cursor is the appropriate value to use as next_cursor in a fetch. the "href" contains a complete URL.
+        required:
+          - cursor
+          - href
+        properties:
+          cursor:
+            type: string
+          href:
+            type: string
+
+  InfoPage:
+    allOf:
+      - $ref: '#/definitions/Page'
+      - type: object
+        required:
+          - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/Info'
 
   Problem:
     type: object

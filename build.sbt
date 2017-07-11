@@ -141,7 +141,9 @@ lazy val root = (project in file("."))
       "com.markland.service.binders._",
       "com.markland.service.models._",
       "com.markland.service.tags.ids",
-      "com.markland.service.IdBindables._"
+      "com.markland.service.tags.cursors",
+      "com.markland.service.IdBindables._",
+      "com.markland.service.CursorBindables._"
     )
   )
   .dependsOn(models, playBasicClient)

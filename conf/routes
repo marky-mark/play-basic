@@ -10,3 +10,5 @@ POST    /api/sales-channels/:sales_channel_id/infos             controllers.Info
 POST    /api/batch/sales-channels/:sales_channel_id/infos       controllers.Infos.postBatch(sales_channel_id: ids.SalesChannelId)
 PUT     /api/sales-channels/:sales_channel_id/infos/:info_id    controllers.Infos.put(sales_channel_id: ids.SalesChannelId, info_id: ids.InfoId)
 GET     /api/sales-channels/:sales_channel_id/infos/:info_id    controllers.Infos.get(sales_channel_id: ids.SalesChannelId, info_id: ids.InfoId)
+
+GET 	/api/infos 	                                            controllers.Infos.query(limit: Int ?= 100, next_cursor: Option[cursors.PageNextCursor], sales_channel_id: Option[ids.SalesChannelId])

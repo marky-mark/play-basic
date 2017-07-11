@@ -1,7 +1,6 @@
 package com.markland.service.models
 
 import com.markland.service.tags._
-
 import play.api.libs.json._
 
 
@@ -19,6 +18,20 @@ case class UpdateInfos(
 )
 
 case class BatchInfo(data: Seq[Info])
+
+case class Page(
+ next: Option[PageNext] = None
+)
+
+case class PageNext(
+ cursor: cursors.PageNextCursor,
+ href: String
+)
+
+case class InfoPage(
+  next: Option[PageNext] = None,
+  items: Seq[Info]
+)
 
 case class Problem(
   title: String,

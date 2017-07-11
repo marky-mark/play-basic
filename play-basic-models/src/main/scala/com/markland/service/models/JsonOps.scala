@@ -43,6 +43,19 @@ object JsonOps {
 
   implicit val formatUpdateInfos: Format[UpdateInfos] =
     (__ \ "tracking_id").format[ids.BatchUpdateId].inmap(UpdateInfos(_), _.trackingId)
+
+  implicit val formatPageNext: Format[PageNext] = (
+    (__ \ "cursor").format[cursors.PageNextCursor] and
+      (__ \ "href").format[String]
+    )(PageNext.apply, unlift(PageNext.unapply))
+
+  implicit val formatPage: Format[Page] =
+    (__ \ "next").formatNullable[PageNext].inmap(Page(_), _.next)
+
+  implicit val formatProductPage: Format[InfoPage] = (
+    (__ \ "next").formatNullable[PageNext] and
+      (__ \ "items").format[Seq[Info]]
+    )(InfoPage.apply, unlift(InfoPage.unapply))
         
 
   private def createEnumFormat[T <: NamedEnum](fn: String => Either[EnumError, T]): Format[T] = {
