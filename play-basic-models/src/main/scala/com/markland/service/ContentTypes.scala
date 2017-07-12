@@ -8,6 +8,7 @@ object ContentTypes {
   }
   val ApplicationJson = ContentType("application/json")
   val ApplicationProblemJson = ContentType("application/problem+json")
+  val ApplicationInfoPageJson = ContentType("application/x.info-page+json")
   val ApplicationZip = ContentType("application/zip")
 }
      

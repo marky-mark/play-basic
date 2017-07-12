@@ -9,6 +9,7 @@ import com.markland.service.tags.ids
 import com.markland.service.tags.ids._
 import cache.LocalCache
 import com.typesafe.scalalogging.LazyLogging
+import models.QueryParams
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.JsObject
 import services.slickbacked.{InfoRepository, InfoSlick}
@@ -16,10 +17,12 @@ import services.slickbacked.{InfoRepository, InfoSlick}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.std.either._
-
 import services.DateTimeHelper._
 
 trait InfoService {
+
+  def query(queryParams: QueryParams, limit: Int, startAfter: Option[InfoId] = None)(implicit ec: ExecutionContext): Future[Seq[Info]]
+
   def list(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Seq[Info]]
 
   def retrieve(salesChannelId: SalesChannelId, infoId: ids.InfoId)(implicit ec: ExecutionContext): Future[Option[Info]]
@@ -84,4 +87,16 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with L
           status = InfoStatusEnum(i.status).disjunction.valueOr(e => sys.error(e.message)),
           lastModified = Some(i.lastModified.toDateTime))))
     }
+
+  override def query(queryParams: QueryParams, limit: Int, startAfter: Option[InfoId])
+                    (implicit ec: ExecutionContext): Future[Seq[Info]] = {
+    infoRepository.query(queryParams, limit, startAfter).map(
+      _.map(i => Info(
+        id = Some(i.id.id[Info]),
+        name = i.name,
+        data = i.data.as[JsObject],
+        meta = i.meta,
+        status = InfoStatusEnum(i.status).disjunction.valueOr(e => sys.error(e.message))))
+    )
+  }
 }

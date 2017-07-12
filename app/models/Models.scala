@@ -4,6 +4,8 @@ import com.markland.service.models.Problem
 import com.markland.service.tags.ids._
 import play.api.http.Status
 
+case class QueryParams(salesChannelId: Option[SalesChannelId])
+
 object Models {
 
   sealed trait CreateResult

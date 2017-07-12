@@ -50,6 +50,10 @@ object Response  {
       case error => InternalServerError(Json.toJson(Seq(Problem(title = "Internal Server Error", status = 500, detail = error.message))))
   }
 
+  def fromEither[T](either: Problem \/ T): EitherT[Future, Result, T] = EitherT[Future, Result, T] {
+    Future.successful(either.leftMap(p => Results.BadRequest(Json.toJson(Seq(p)))))
+  }
+
   def fromFuture[T](fut: Future[T])(implicit ec: ExecutionContext) = EitherT[Future, Result, T] { fut.map(_.right[Result]) }
 
   def fromFutureOption[T](onNone: => Result)(source: Future[Option[T]])(implicit ec: ExecutionContext) = EitherT[Future, Result, T] {

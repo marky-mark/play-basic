@@ -4,17 +4,20 @@ import java.time.Clock
 import java.util.UUID
 
 import akka.actor.ActorSystem
+import com.markland.service.ContentTypes._
 import com.markland.service.Id._
+import com.markland.service.Cursor._
 import com.markland.service.HeaderParams.RequestHeaderOps
-import com.markland.service.Id
 import com.markland.service.models.JsonOps._
-import com.markland.service.models.{BatchInfo, Info, Problem, UpdateInfos}
+import com.markland.service.models._
 import com.markland.service.refs.RequestGroupRef
 import com.markland.service.tags.cursors.PageNextCursor
 import com.markland.service.tags.ids
 import com.markland.service.tags.ids.{BatchUpdateId, RequestGroupId, SalesChannelId}
+import models.QueryParams
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import play.api.{Environment, Mode}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, Controller, Result}
 import services.InfoService
@@ -25,15 +28,35 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.Scalaz._
 import scalaz._
 
-class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository, internalEventProducer: ProtoEventProducer)
+class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository,
+            internalEventProducer: ProtoEventProducer, val environment: Environment)
            (implicit val ec: ExecutionContext, val clock: Clock) extends Controller {
 
   import Response._
 
+  val secureUrl = environment.mode != Mode.Dev
+
   def query(limit: Int,
             nextCursor: Option[PageNextCursor] = None,
             ownerId: Option[SalesChannelId] = None) = Action.async { implicit request =>
-    Future.successful(Ok(Json.obj()))
+
+    def paged(infos: Seq[Info], hasNext: Boolean) = InfoPage(
+      next = infos.lastOption.filter(_ => hasNext).map { case i =>
+        val cursor = i.id.get.value.toString.cursor[PageNext]
+        PageNext(
+          cursor = cursor,
+          href = routes.Infos.query(limit, Some(cursor), ownerId).absoluteURL(secureUrl)
+        )
+      },
+      items = infos
+    )
+
+    val result = for {
+      _             <- RequestValidationUtils.validateLimit(limit)          |> fromEither
+      infos         <- infoService.query(QueryParams(ownerId), limit + 1)   |> fromFuture
+    } yield Ok(Json.toJson(paged(infos, infos.seq.size > limit))) as ApplicationInfoPageJson
+
+    result.merge
   }
 
   def list(salesChannelId: ids.SalesChannelId) = Action.async { implicit request =>
@@ -123,8 +146,8 @@ object InfoResponses {
     InternalServerError(Json.toJson(Seq(problem)))
   }
 
-  def fromEncodingHeader(rules: Seq[Info])(acceptEncoding: Option[String]) = EitherT[Future, Result, JsValue] {
-    val json = Json.toJson(rules)
+  def fromEncodingHeader(infos: Seq[Info])(acceptEncoding: Option[String]) = EitherT[Future, Result, JsValue] {
+    val json = Json.toJson(infos)
     acceptEncoding match {
       case None => Future.successful(json.right)
       case Some(encoding) if (encoding == GZIP_ENCODING) => {
