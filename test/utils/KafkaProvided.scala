@@ -44,7 +44,7 @@ trait KafkaProvided extends LazyLogging {
         }
         recur(1)
       }
-      retrying(20)(self.readMessages(topicName, expectedMessages))
+      retrying(30)(self.readMessages(topicName, expectedMessages))
     }
   }
 
