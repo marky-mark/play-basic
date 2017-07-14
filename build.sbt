@@ -36,12 +36,12 @@ lazy val commonSettings = Seq(
 )
 
 lazy val dockerSettings = Seq(
-  maintainer in Docker := "mkelly28@tcd.ie",
-  dockerBaseImage in Docker := "registry.opensource.zalan.do/stups/openjdk:8u91-b14-1-22",
-  dockerRepository in Docker := Some("markymark1"),
-  dockerExposedPorts in Docker := Seq(9000),
-  dockerExposedVolumes in Docker := Seq("/opt/docker/logs"),
-  daemonUser in Docker := "root",
+  maintainer := "mkelly28@tcd.ie",
+  dockerBaseImage := "registry.opensource.zalan.do/stups/openjdk:8u91-b14-1-22",
+  dockerRepository := Some("markymark1"),
+  dockerExposedPorts := Seq(9000),
+  dockerExposedVolumes := Seq("/opt/docker/logs"),
+  daemonUser := "root",
   dockerImageCreationTask := (publishLocal in Docker).value
 )
 
