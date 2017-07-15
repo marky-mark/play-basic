@@ -22,7 +22,8 @@ trait ApplicationModules extends BuiltInComponents
   with MetricsModule
   with SlickBackedModule
   with ControllersModule
-  with EventsModule {
+  with EventsProducerModule
+  with EventsConsumerModule {
 
   /**
     * could do val config = ConfigFactory.load()

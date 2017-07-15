@@ -11,7 +11,7 @@ import play.api.Environment
 
 import scala.concurrent.ExecutionContext
 
-trait ControllersModule { self: ServiceModule with MetricsModule with SlickBackedModule with EventsModule =>
+trait ControllersModule { self: ServiceModule with MetricsModule with SlickBackedModule with EventsProducerModule =>
 
   def environment: Environment
 

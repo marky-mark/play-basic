@@ -5,7 +5,7 @@ import com.typesafe.config.Config
 import play.api.Configuration
 import services.events.{InternalProducerConfig, ProtoEventProducer}
 
-trait EventsModule {
+trait EventsProducerModule {
 
   def configuration: Configuration
 

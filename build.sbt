@@ -89,6 +89,8 @@ lazy val protoSettings = Seq(
   PB.protoSources in Compile := Seq(file("protobuf"))
 )
 
+val AkkaVersion             = "2.4.16"
+
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
   .configs(IntegrationTest)
@@ -106,6 +108,9 @@ lazy val root = (project in file("."))
       "io.dropwizard.metrics" % "metrics-logback" % "3.1.2",
       "io.prometheus" % "simpleclient_dropwizard" % "0.0.23",
       "io.prometheus" % "simpleclient_common" % "0.0.23",
+
+      "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.13",
 
       "org.apache.kafka" %% "kafka" % "0.10.2.1" excludeAll (
 //        ExclusionRule(organization = "org.slf4j"),
