@@ -42,4 +42,5 @@ trait ApplicationModules extends BuiltInComponents
   override lazy val httpFilters: Seq[EssentialFilter] = Seq(metricsFilter)
   metricsPlugin.start()
 
+  startInternalConsumer()
 }
