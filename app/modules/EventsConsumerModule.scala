@@ -8,7 +8,7 @@ import java.util.concurrent.TimeoutException
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, Supervision}
 import play.api.Configuration
-import services.events.EventConsumer
+import services.events.{ConsumerConfig, EventConsumer, KafkaConsumerConfig}
 
 import scala.util.control.NonFatal
 import com.softwaremill.macwire._
@@ -34,6 +34,8 @@ trait EventsConsumerModule {
 
   implicit val executionContext = actorSystem.dispatchers.lookup("consumer-context")
 
-  wire[EventConsumer].run
+  private lazy val consumerConfig: KafkaConsumerConfig =  ConsumerConfig.apply(configuration.underlying)
+
+  lazy val consumer = wire[EventConsumer].run().onFailure { case err => actorSystem.log.error(err, "Exception raised in 'consumer'") }
 
 }

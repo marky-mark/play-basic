@@ -4,10 +4,13 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.LazyLogging
 
-class EventConsumer extends LazyLogging {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def run()(implicit actorSystem: ActorSystem, actorMaterializer: ActorMaterializer) = {
+class EventConsumer(consumerConfig: KafkaConsumerConfig) extends LazyLogging {
+
+  def run()(implicit ec: ExecutionContext, actorSystem: ActorSystem, actorMaterializer: ActorMaterializer) =  Future[Unit] {
     logger.info("Starting consumer")
+    Future.successful(())
   }
 
 }
