@@ -1,23 +1,28 @@
 package services.events
 
+import java.util.UUID
+
 import com.google.protobuf.ByteString
 import com.markland.service.models.{BatchInfo => ModelBatchInfo, Info => ModelInfo, InfoStatusEnum => ModelInfoStatusEnum}
 import com.markland.service.tags.ids._
+import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.json.{JsNull, JsArray => PlayJsArray, JsBoolean => PlayJsBoolean, JsNumber => PlayJsNumber, JsObject => PlayJsonObject, JsString => PlayJsString, JsValue => PlayJsValue}
 
 import scalaz.\/
 import scalaz.syntax.either._
+import com.markland.service.Id.IdOps
 
-object ProtoTransformer {
+object ProtoTransformer extends LazyLogging {
 
   def toProto(flowId: Option[FlowId], batchInfo: ModelBatchInfo): BatchInfo = {
-    services.events.BatchInfo(flowId.map(_.value).getOrElse(""), infosToproto(batchInfo.data))
+    val toproto: Seq[Info] = infosToproto(batchInfo.data)
+    logger.info(s"Converting ${batchInfo.data} to ${toproto}")
+    services.events.BatchInfo(flowId.map(_.value).getOrElse(""), toproto)
   }
 
   private def infosToproto(infos: Seq[ModelInfo]): Seq[Info] = {
-    infos.flatMap(info => info.id.map(i =>
-      services.events.Info(i.value.toString, info.name, Some(toInternalJsObject(info.data)), info.meta,
-        toInternalProductStatus(info.status).getOrElse(InfoStatus.ACTIVE) )))
+    infos.map(info => services.events.Info(info.id.getOrElse(UUID.randomUUID().id).value.toString, info.name, Some(toInternalJsObject(info.data)), info.meta,
+        toInternalProductStatus(info.status).getOrElse(InfoStatus.ACTIVE) ))
   }
 
   private def toInternalProductStatus(status: ModelInfoStatusEnum.InfoStatus): String \/ InfoStatus = status match {

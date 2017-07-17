@@ -32,18 +32,27 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig)
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
+      .map(il => il.map(i => logger.info(s"Info ${i}")))
       .runWith(Sink.ignore)
   }
 
-  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]) = Future[Option[Internalevent.BatchInfo]] {
-    safelyFromBytes(commitableMessage.record.value())
+  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]) = Future[List[Internalevent.Info]] {
+    val batchInfos: Option[Internalevent.BatchInfo] = safelyFromBytes(commitableMessage.record.value())
+
+    import collection.JavaConverters._
+
+    batchInfos match {
+      case Some(b) => b.getInfoList.asScala.toList
+      case None => List()
+    }
+
   }
 
   private def safelyFromBytes[T](data: Array[Byte]): Option[Internalevent.BatchInfo] = {
     Try {
       Internalevent.BatchInfo.parseFrom(data)
     }.map { i =>
-      logger.info(s"Successfully parsed batch for flow id ${i.getFlowId}")
+      logger.info(s"Successfully parsed batch for flow id ${i.getFlowId} and ${i.getInfoList}")
       Some(i)
     }.recover {
       case NonFatal(err) =>
