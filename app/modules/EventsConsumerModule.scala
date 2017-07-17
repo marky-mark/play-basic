@@ -13,7 +13,7 @@ import services.events.{InternalConsumerConfig, EventConsumer, InternalKafkaCons
 import scala.util.control.NonFatal
 import com.softwaremill.macwire._
 
-trait EventsConsumerModule {
+trait EventsConsumerModule { self: ServiceModule =>
 
   def actorSystem: ActorSystem
   def configuration: Configuration

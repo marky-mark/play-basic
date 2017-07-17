@@ -11,12 +11,13 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.clients.consumer.{ConsumerConfig => KafkaConsumerConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
 import play.api.Logger
+import services.InfoService
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig)
+class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoService: InfoService)
                    (implicit ec: ExecutionContext, actorSystem: ActorSystem, actorMaterializer: ActorMaterializer) extends LazyLogging {
 
   val consumerSettings =
@@ -32,7 +33,7 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig)
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
-      .map(il => il.map(i => logger.info(s"Info ${i}")))
+      .map(il => il.map(i => logger.info(s"Info ${i}" )))
       .runWith(Sink.ignore)
   }
 
