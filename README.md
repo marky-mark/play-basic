@@ -63,5 +63,11 @@ Clear out old docker images [stack overflow](https://stackoverflow.com/questions
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc) 
 ```
 
+Or clear out the exited containers
+
+```bash
+docker rm -v $(docker ps -a -q -f status=exited)
+```
+
 
 
