@@ -45,7 +45,7 @@ class InfoServiceImplTest extends FlatSpec
       Right(marketplaceToBeStored.id.get.value)
     })
 
-    service.insert(UUID.randomUUID().id,UUID.randomUUID() ,marketplaceToBeStored)
+    val result: Future[Option[UUID]] = service.insert(UUID.randomUUID().id,UUID.randomUUID() ,marketplaceToBeStored)
 
     val captor: ArgumentCaptor[InfoSlick] = ArgumentCaptor.forClass(classOf[InfoSlick])
 
@@ -57,6 +57,12 @@ class InfoServiceImplTest extends FlatSpec
     receivedMarketplace.id should not be marketplaceToBeStored.id
     receivedMarketplace.lastModified should not be marketplaceToBeStored.lastModified
     receivedMarketplace.name should ===(marketplaceToBeStored.name)
+
+    //if not a future use the below...
+    // an Exception[UnknownStatusEnumException] should be thrownBy service.insert(marketplaceToBeStored)
+//    eventually {
+//      result.failed.futureValue shouldBe an[UnknownStatusEnumException]
+//    }
 
   }
 
