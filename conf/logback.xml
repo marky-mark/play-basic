@@ -2,7 +2,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%level - %logger - %message%n%xException</pattern>
+            <pattern>%level - %logger - ${Environment:-LOCAL} - %message%n%xException</pattern>
         </encoder>
     </appender>
 
@@ -16,6 +16,7 @@
     <logger name="modules" level="INFO" />
     <logger name="services" level="INFO" />
     <logger name="models" level="INFO" />
+    <logger name="com.zaxxer.hikari" level="INFO" />
     <!--<logger name="auth" level="INFO" />-->
 
     <root level="INFO">

@@ -37,8 +37,14 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
       .map(il => il.map { case (sc, i) =>
         logger.info(s"Sales Channel ${sc} Info ${i}")
-      })
-      .runWith(Sink.ignore)
+        (sc, i)
+      }).runForeach(_.map { case (sc, i) =>
+      logger.info(s"Sales Channel ${sc} Info ${i}")
+      //insert batch
+    }
+
+    )
+//      .runWith(Sink.ignore)
   }
 
   private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]): Future[Option[(SalesChannelId, Seq[InternalInfo])]] =

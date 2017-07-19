@@ -29,7 +29,7 @@ class StringEventProducer(producerConfig: ProducerConfig) extends EventProducer[
 }
 
 class ProtoEventProducer(producerConfig: ProducerConfig) extends EventProducer[Array[Byte]] {
-  override def kafkaClient: KafkaProducer[String, Array[Byte]] =
+  override val kafkaClient: KafkaProducer[String, Array[Byte]] =
     new KafkaProducer[String, Array[Byte]](producerConfig.props)
 
   override def send(partitionKey: String, event: Array[Byte])(implicit ec: ExecutionContext): Future[Unit] =
