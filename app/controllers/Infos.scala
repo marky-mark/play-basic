@@ -94,7 +94,7 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
       body            <-  request.body.validate[BatchInfo]                                                       |> fromJsResult
       flowId          <-  request.flowId                                                                         |> fromHeaderParam
       trackingId      <-  Future.successful(UUID.randomUUID().id[UpdateInfos])                                   |> fromFuture
-      bodyTransformed =   ProtoTransformer.toProto(flowId, body)
+      bodyTransformed =   ProtoTransformer.toProto(flowId, body, salesChannelId)
       _               <-  internalEventProducer.send(requestGroupId.value.toString, bodyTransformed.toByteArray) |> fromFuture
     } yield Accepted(Json.toJson(UpdateInfos(trackingId)))
 

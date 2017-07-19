@@ -26,14 +26,17 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
       new ByteArrayDeserializer)
       .withGroupId(internalConsumerConfig.groupId)
       .withBootstrapServers(internalConsumerConfig.bootstrapServer)
-      .withProperty(KafkaConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+      .withProperty(KafkaConsumerConfig.AUTO_OFFSET_RESET_CONFIG, internalConsumerConfig.autoOffsetRest)
 
   def run(): Future[Done] = {
     logger.info("Starting consumer")
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
-      .map(il => il.map(i => logger.info(s"Info ${i}" )))
+      .map(il => il.map { i =>
+        logger.info(s"Info ${i}")
+        //map to local state
+      })
       .runWith(Sink.ignore)
   }
 
