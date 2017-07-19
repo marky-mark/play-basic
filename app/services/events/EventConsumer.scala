@@ -7,6 +7,8 @@ import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
+import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo}
+import com.markland.service.tags.ids._
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.clients.consumer.{ConsumerConfig => KafkaConsumerConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
@@ -33,30 +35,31 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
-      .map(il => il.map { i =>
-        logger.info(s"Info ${i}")
-        //map to local state
+      .map(il => il.map { case (sc, i) =>
+        logger.info(s"Sales Channel ${sc} Info ${i}")
       })
       .runWith(Sink.ignore)
   }
 
-  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]) = Future[List[Internalevent.Info]] {
-    val batchInfos: Option[Internalevent.BatchInfo] = safelyFromBytes(commitableMessage.record.value())
+  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]): Future[Option[(SalesChannelId, Seq[InternalInfo])]] =
 
-    import collection.JavaConverters._
+    Future[Option[(SalesChannelId, Seq[InternalInfo])]] {
 
-    batchInfos match {
-      case Some(b) => b.getInfoList.asScala.toList
-      case None => List()
+    val batchInfosproto: Option[BatchInfo] = safelyFromBytes(commitableMessage.record.value())
+
+    batchInfosproto.map { b =>
+      val (flowId: Option[FlowId], batchInfo: InternalBatchInfo, salesChannelId: SalesChannelId)
+      = ProtoTransformer.fromProto(b)
+      (salesChannelId, batchInfo.data)
     }
 
   }
 
-  private def safelyFromBytes[T](data: Array[Byte]): Option[Internalevent.BatchInfo] = {
+  private def safelyFromBytes[T](data: Array[Byte]): Option[BatchInfo] = {
     Try {
-      Internalevent.BatchInfo.parseFrom(data)
+      BatchInfo.parseFrom(data)
     }.map { i =>
-      logger.info(s"Successfully parsed batch for flow id ${i.getFlowId} and ${i.getInfoList}")
+      logger.info(s"Successfully parsed batch for flow id ${i.flowId} and ${i.info}")
       Some(i)
     }.recover {
       case NonFatal(err) =>
