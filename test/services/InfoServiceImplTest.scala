@@ -64,6 +64,18 @@ class InfoServiceImplTest extends FlatSpec
 //      result.failed.futureValue shouldBe an[UnknownStatusEnumException]
 //    }
 
+    /*
+     when(mockRepo.insert(any(classOf[MarketplaceSlick]))(any(classOf[ExecutionContext]))).thenReturn(Future.failed {
+        new UnknownStatusEnumException("foo")
+    })
+
+    val result: Future[Marketplace] = service.insert(marketplaceToBeStored)
+
+    eventually {
+      result.failed.futureValue shouldBe an[UnknownStatusEnumException]
+    }
+     */
+
   }
 
 }
