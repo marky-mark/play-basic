@@ -57,17 +57,28 @@ swagger-codegen generate -i swagger/api.yaml -l swagger -o public/
 
 ### Docker
 
-Clear out old docker images [stack overflow](https://stackoverflow.com/questions/32723111/how-to-remove-old-and-unused-docker-images)
+Clear out old docker images
 
 ```bash
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc) 
 ```
 
-Or clear out the exited containers
+Clear out the exited containers
 
 ```bash
 docker rm -v $(docker ps -a -q -f status=exited)
 ```
 
+List docker images
+
+```bash
+docker images -a
+```
+
+List docker containers
+
+```bash
+docker ps -a
+```
 
 
