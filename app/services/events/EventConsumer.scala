@@ -41,10 +41,10 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
         logger.info(s"Mapped Sales Channel ${sc} Info ${i}")
         (sc, i.map(info => info))
       })
-      //Note the last element does not get pushed until another item gets entered from the source
+      //Note the last element does not get logged until another item gets entered from the source
       .runForeach(_.map { case (sc, i) =>
       logger.info(s"Inserting Sales Channel ${sc} Info ${i}")
-      //insert batch
+      infoService.batchUpdate(sc, i)
     }
 
     )

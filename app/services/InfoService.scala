@@ -31,6 +31,8 @@ trait InfoService {
 
   def update(salesChannelId: SalesChannelId, infoId: InfoId, info: Info)(implicit ec: ExecutionContext): Future[Option[UUID]]
 
+  def batchUpdate(salesChannelId: SalesChannelId, info: Seq[Info])(implicit ec: ExecutionContext): Future[Option[Int]]
+
   def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
 
@@ -71,6 +73,19 @@ class InfoServiceImpl(infoRepository: InfoRepository) extends InfoService with L
         case Left(s) => None
         case Right(i) => Some(i)
     }
+  }
+
+  override def batchUpdate(salesChannelId: SalesChannelId, infos: Seq[Info])(implicit ec: ExecutionContext): Future[Option[Int]] = {
+    infoRepository.batchInsert(infos.map(info =>
+      InfoSlick(
+        id = info.id.map(_.value).getOrElse(UUID.randomUUID()),
+        lastModified = getCurrentTimeStamp,
+        salesChannelId = salesChannelId.value,
+        meta = info.meta.toList,
+        name = info.name,
+        status = info.status.name,
+        data = info.data))
+    )
   }
 
   override def getLastModifiedDate(salesChannelId: SalesChannelId)(implicit ec: ExecutionContext): Future[Option[DateTime]] =
