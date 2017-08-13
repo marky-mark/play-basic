@@ -9,9 +9,11 @@ import metrics.MetricsService
 import models.QueryParams
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.Json
+import services.slickbacked.DBHelpers._
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Try}
+import scalaz.\/
 
 trait InfoRepository {
 
@@ -21,9 +23,13 @@ trait InfoRepository {
 
   def retrieve(salesChannelId: UUID, infoId: UUID)(implicit ec: ExecutionContext): Future[Option[InfoSlick]]
 
-  def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String,UUID]] //just doing an Either for fun
+  def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String, UUID]] //just doing an Either for fun
 
   def update(info: InfoSlick)(implicit ec: ExecutionContext): Future[Option[UUID]]
+
+  def batchUpdate(info: Seq[InfoSlick])(implicit ec: ExecutionContext): Future[Unit]
+
+  def batchInsert(infos: Seq[InfoSlick])(implicit ec: ExecutionContext): Future[Option[Int]]
 
   def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]]
 }
@@ -35,7 +41,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
 
   import dm.driver.api._
 
-  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]] =  metricsService.measureAndIncrementFut("inforepo.list", "inforepo.list") {
+  override def list(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Seq[InfoSlick]] = metricsService.measureAndIncrementFut("inforepo.list", "inforepo.list") {
     val info = for {
       i <- dm.info if i.salesChannelId === salesChannelId
     } yield i
@@ -43,7 +49,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     db.run(info.result)
   }
 
-  override def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String,UUID]] = {
+  override def insert(info: InfoSlick)(implicit ec: ExecutionContext): Future[Either[String, UUID]] = {
 
     val insertInfo = (dm.info returning dm.info.map(_.id) into ((item, id) => item.copy(id = id))) += info
 
@@ -51,7 +57,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
       i <- insertInfo
     } yield Right(i.id)
 
-    db.run (action.transactionally).recover {
+    db.run(action.transactionally).recover {
       case e: Exception => logger.error("Error caught", e); Left("Exception Occured")
     }
   }
@@ -64,6 +70,44 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
       case 0 => None
       case _ => Some(info.id)
     }
+  }
+
+  //sadly slick cannot do batch upserts :(
+
+  override def batchInsert(infos: Seq[InfoSlick])(implicit ec: ExecutionContext): Future[Option[Int]] = {
+
+    import services.slickbacked.FutureUtils._
+
+    db.run {
+      dm.info ++= infos
+    }.logOnFailure(ex => s"Failed to create a batch of info: $ex")
+  }
+
+  override def batchUpdate(info: Seq[InfoSlick])(implicit ec: ExecutionContext): Future[Unit] = {
+
+    val batchStmt = SimpleDBIO[Unit] { ctx =>
+      closing(ctx.connection.prepareStatement(
+        "update info set name = ?, data = ?, meta = ?, sales_channel_id = ?, last_modified = ?, status = ? where id = ?")) { pstmt =>
+
+        info.foreach { i =>
+
+          pstmt.setString(1, i.name)
+          pstmt.setObject(2, asPGObject(Json.toJson(i.data)))
+          pstmt.setArray(3, ctx.connection.createArrayOf("text", i.meta.toArray))
+          pstmt.setObject(4, i.salesChannelId)
+          pstmt.setTimestamp(5, i.lastModified)
+          pstmt.setString(6, i.status)
+          pstmt.setObject(7, i.id)
+          pstmt.addBatch()
+        }
+        pstmt.executeBatch()
+      }
+      ()
+    }
+
+    import services.slickbacked.FutureUtils._
+
+    db.run(batchStmt).logOnFailure(ex => s"Failure interacting with DB while updating infos: $ex")
   }
 
   override def getLastModifiedDate(salesChannelId: UUID)(implicit ec: ExecutionContext): Future[Option[DateTime]] = {
@@ -83,7 +127,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
     val filteredQuery = {
       val base = queryParams.salesChannelId match {
         case Some(ownerId) => dm.info.filter(_.salesChannelId === ownerId.value)
-        case None =>          dm.info
+        case None => dm.info
       }
 
       //can do more filters if you you like
@@ -105,6 +149,7 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
 }
 
 object FutureUtils extends LazyLogging {
+
   implicit class FutureUtilsSupport[T](val self: Future[T]) extends AnyVal {
     def logOnFailure(report: Throwable => String, reportStackTrace: Boolean = false)(implicit ec: ExecutionContext): Future[T] = self.andThen {
       case Failure(ex: BatchUpdateException) if reportStackTrace => logger.error(report(ex.getNextException), ex)
@@ -122,4 +167,5 @@ object FutureUtils extends LazyLogging {
       p.future
     }
   }
+
 }

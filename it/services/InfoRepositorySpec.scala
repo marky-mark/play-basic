@@ -61,6 +61,54 @@ class InfoRepositorySpec extends DBSpecIT {
     infos.filter(_.id == expectedId1).head should ===(info1Updated)
   }
 
+  it should "Insert batch insert" in {
+
+    val expectedId1 = UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220")
+    val info1 = InfoSlick(expectedId1, "foo", dataJson.as[JsObject], List("foo", "bar"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    val expectedId2 = UUID.fromString("2A41F667-F9C9-4F79-A46F-A0758D1E0672")
+    val info2 = InfoSlick(expectedId2, "bar", dataJson.as[JsObject], List("foo", "bar", "zoo"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    infoRepository.batchInsert(Seq(info1, info2))
+
+    eventually {
+      val infos = infoRepository.list(baseSalesChannelId).futureValue
+      infos.size should ===(2)
+    }
+  }
+
+  it should "Insert batch update" in {
+
+    val expectedId1 = UUID.fromString("62729342-A89D-401A-8B42-32BD15E01220")
+    val info1 = InfoSlick(expectedId1, "foo", dataJson.as[JsObject], List("foo", "bar"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    infoRepository.insert(info1)
+
+    val expectedId2 = UUID.fromString("2A41F667-F9C9-4F79-A46F-A0758D1E0672")
+    val info2 = InfoSlick(expectedId2, "bar", dataJson.as[JsObject], List("foo", "bar", "zoo"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    infoRepository.insert(info2)
+
+    val info1Adjusted = InfoSlick(expectedId1, "foo", dataJson.as[JsObject], List("foo"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    val info2Adjusted = InfoSlick(expectedId1, "fooChanged", dataJson.as[JsObject], List("foo"), getCurrentTimeStamp,
+      baseSalesChannelId, "enabled")
+
+    infoRepository.batchUpdate(Seq(info1Adjusted, info2Adjusted))
+
+    eventually {
+
+      val adjusted = infoRepository.retrieve(baseSalesChannelId, expectedId1).futureValue.get
+      adjusted.meta.head should ===("foo")
+      adjusted.meta.size should ===(1)
+    }
+  }
+
   private def getCurrentTimeStamp: Timestamp = new Timestamp(new DateTime(DateTimeZone.UTC).getMillis)
 
   it should "return last modified date" in {

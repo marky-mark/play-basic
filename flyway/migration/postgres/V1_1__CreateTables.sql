@@ -3,8 +3,10 @@ CREATE TABLE sales_channels (
     CONSTRAINT sales_channel_pkey PRIMARY KEY (id)
 );
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE info (
-    id               UUID    NOT NULL,
+    id               UUID    NOT NULL default uuid_generate_v4(),
     name             text,
     data             jsonb   NOT NULL,
     meta             text[],

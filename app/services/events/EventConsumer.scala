@@ -5,7 +5,7 @@ import akka.actor.ActorSystem
 import akka.kafka.ConsumerMessage.CommittableMessage
 import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
-import akka.stream.ActorMaterializer
+import akka.stream.{ThrottleMode, ActorMaterializer}
 import akka.stream.scaladsl.Sink
 import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo}
 import com.markland.service.tags.ids._
@@ -14,6 +14,7 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig => KafkaConsumerConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
 import play.api.Logger
 import services.InfoService
+import scala.concurrent.duration._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -34,12 +35,15 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
     logger.info("Starting consumer")
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
+//      .throttle(1, 1.second, 1, ThrottleMode.shaping)
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
       .map(il => il.map { case (sc, i) =>
-        logger.info(s"Sales Channel ${sc} Info ${i}")
-        (sc, i)
-      }).runForeach(_.map { case (sc, i) =>
-      logger.info(s"Sales Channel ${sc} Info ${i}")
+        logger.info(s"Mapped Sales Channel ${sc} Info ${i}")
+        (sc, i.map(info => info))
+      })
+      //Note the last element does not get pushed until another item gets entered from the source
+      .runForeach(_.map { case (sc, i) =>
+      logger.info(s"Inserting Sales Channel ${sc} Info ${i}")
       //insert batch
     }
 

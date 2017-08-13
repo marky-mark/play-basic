@@ -81,4 +81,6 @@ List docker containers
 docker ps -a
 ```
 
-
+```
+docker system prune
+```
