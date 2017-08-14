@@ -59,7 +59,9 @@ paths:
           200:
             description: Successful
             schema:
-              $ref: '#/definitions/Info'
+              type: array
+              items:
+                $ref: '#/definitions/Info'
           400:
             description: Bad Request
           401:
