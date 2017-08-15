@@ -42,4 +42,33 @@ class DataModel(val driver: ExtendedPostgresDriver) {
   lazy val info = TableQuery[InfoTable]
   lazy val salesChannels = TableQuery[SalesChannelsTable]
 
+
+  case class EventTracking(id: UUID,
+                           salesChannelId: UUID,
+                           groupId: Option[UUID],
+                           status: String,
+                           createdAt: Timestamp,
+                           updatedAt: Option[Timestamp] = None,
+                           result: Option[String] = None,
+                           problems: Option[JsValue] = None)
+
+  case class EventTrackingTable(tag: Tag) extends Table[EventTracking](tag, "event_tracking") {
+    def id = column[UUID]("id", O.PrimaryKey)
+    def salesChannelId = column[UUID]("sales_channel_id")
+    def groupId = column[Option[UUID]]("group_id")
+    def status = column[String]("status")
+    def createdAt = column[Timestamp]("created_at")
+    def updatedAt = column[Option[Timestamp]]("updated_at")
+    def result = column[Option[String]]("result")
+    def problems = column[Option[JsValue]]("problems")
+
+    def fk = foreignKey("event_tracking_sc_fkey", salesChannelId, salesChannels)(_.id, onDelete = ForeignKeyAction.Cascade)
+
+    def * = (id, salesChannelId, groupId, status, createdAt, updatedAt, result, problems) <> (EventTracking.tupled, EventTracking.unapply _)
+  }
+
+  val eventTrackings = TableQuery[EventTrackingTable]
+
+  val schema = info.schema ++ salesChannels.schema ++ eventTrackings.schema
+
 }

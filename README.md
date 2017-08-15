@@ -84,3 +84,24 @@ docker ps -a
 ```
 docker system prune
 ```
+
+
+### Jenkins 
+
+```
+buildDescription(".*\\[info\\] Built image markymark1/play-basic:(.*)")
+```
+
+ Jenkins Job DSL plugin is used to for job creation
+
+* Create the *seed job* on jenkins which clones this repo and has a *Process Job DSL* step which loads the `jenkins/jobs.groovy` DSL script
+
+* Any changes made to `jobs.groovy` will require 'Build Now' to be run on the seed job
+
+### Test Coverage
+
+Bit unsure, it tests aren't covered
+
+https://github.com/scoverage/sbt-scoverage
+
+```sbt coverage test dockerComposeTest coverageReport```
