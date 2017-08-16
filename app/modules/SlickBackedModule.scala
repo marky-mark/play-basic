@@ -2,7 +2,7 @@ package modules
 
 import com.softwaremill.macwire._
 import play.api.Configuration
-import services.slickbacked.{DatabaseProvider, InfoRepositoryImpl, SalesChannelRepositoryImpl}
+import services.slickbacked.{EventTrackingRepositoryImpl, DatabaseProvider, InfoRepositoryImpl, SalesChannelRepositoryImpl}
 
 trait SlickBackedModule { self: MetricsModule =>
 
@@ -12,4 +12,5 @@ trait SlickBackedModule { self: MetricsModule =>
 
   lazy val salesChannelRepository = wire[SalesChannelRepositoryImpl]
   lazy val infoRepository = wire[InfoRepositoryImpl]
+  lazy val eventTrackingRepository = wire[EventTrackingRepositoryImpl]
 }

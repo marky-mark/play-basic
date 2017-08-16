@@ -1,6 +1,5 @@
 package services.slickbacked
 
-import java.sql.BatchUpdateException
 import java.util.UUID
 
 import com.markland.service.tags.ids.InfoId
@@ -11,9 +10,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.Json
 import services.slickbacked.DBHelpers._
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.{Failure, Try}
-import scalaz.\/
+import scala.concurrent.{ExecutionContext, Future}
 
 trait InfoRepository {
 
@@ -146,26 +143,4 @@ class InfoRepositoryImpl(dbProvider: DatabaseProvider, metricsService: MetricsSe
       }
     }.logOnFailure(ex => s"Failure interacting with DB while querying Products: $ex")
   }
-}
-
-object FutureUtils extends LazyLogging {
-
-  implicit class FutureUtilsSupport[T](val self: Future[T]) extends AnyVal {
-    def logOnFailure(report: Throwable => String, reportStackTrace: Boolean = false)(implicit ec: ExecutionContext): Future[T] = self.andThen {
-      case Failure(ex: BatchUpdateException) if reportStackTrace => logger.error(report(ex.getNextException), ex)
-      case Failure(ex: BatchUpdateException) if !reportStackTrace => logger.error(report(ex.getNextException))
-      case Failure(ex) if reportStackTrace => logger.error(report(ex), ex)
-      case Failure(ex) if !reportStackTrace => logger.error(report(ex))
-    }
-
-    def flattenedAndThen[U](pf: PartialFunction[Try[T], Future[U]])(implicit ec: ExecutionContext) = {
-      val p = Promise[T]
-      self.onComplete {
-        case result if pf.isDefinedAt(result) => pf(result).onComplete { case _ => p.complete(result) }
-        case result => p.complete(result)
-      }
-      p.future
-    }
-  }
-
 }

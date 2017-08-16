@@ -12,3 +12,5 @@ create table event_tracking(
         REFERENCES sales_channels (id) MATCH SIMPLE
         ON UPDATE NO ACTION ON DELETE CASCADE
 );
+
+create index on event_tracking(sales_channel_id, group_id);

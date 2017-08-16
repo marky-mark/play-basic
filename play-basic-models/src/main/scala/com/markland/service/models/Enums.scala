@@ -25,5 +25,21 @@ object InfoStatusEnum {
   }
 }
 
+object EnrichmentUpdateStatusStatusEnum {
+  sealed trait Status extends NamedEnum
+
+  case object Pending extends Status { override val name = "pending" }
+  case object Successful extends Status { override val name = "successful" }
+  case object Failed extends Status { override val name = "failed" }
+
+
+  def apply(name: String): Either[EnumError, Status] = name match {
+    case Pending.name => Right(Pending)
+    case Successful.name => Right(Successful)
+    case Failed.name => Right(Failed)
+    case _ => Left(BadValue(s"Unknown value '$name' for 'status' enum"))
+  }
+}
+
 
      

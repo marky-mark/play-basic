@@ -5,8 +5,7 @@ import akka.actor.ActorSystem
 import akka.kafka.ConsumerMessage.CommittableMessage
 import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
-import akka.stream.{ThrottleMode, ActorMaterializer}
-import akka.stream.scaladsl.Sink
+import akka.stream.ActorMaterializer
 import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo}
 import com.markland.service.tags.ids._
 import com.typesafe.scalalogging.LazyLogging
@@ -14,7 +13,6 @@ import org.apache.kafka.clients.consumer.{ConsumerConfig => KafkaConsumerConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
 import play.api.Logger
 import services.InfoService
-import scala.concurrent.duration._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try

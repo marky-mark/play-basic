@@ -3,32 +3,31 @@ package controllers
 import java.time.Clock
 import java.util.UUID
 
-import akka.actor.ActorSystem
 import com.markland.service.ContentTypes._
-import com.markland.service.Id._
 import com.markland.service.Cursor._
 import com.markland.service.HeaderParams.RequestHeaderOps
+import com.markland.service.Id._
 import com.markland.service.models.JsonOps._
 import com.markland.service.models._
 import com.markland.service.refs.RequestGroupRef
 import com.markland.service.tags.cursors.PageNextCursor
 import com.markland.service.tags.ids
-import com.markland.service.tags.ids.{BatchUpdateId, RequestGroupId, SalesChannelId}
+import com.markland.service.tags.ids.SalesChannelId
 import models.QueryParams
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import play.api.{Environment, Mode}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, Controller, Result}
+import play.api.{Environment, Mode}
 import services.InfoService
 import services.events.{ProtoEventProducer, ProtoTransformer}
-import services.slickbacked.SalesChannelRepository
+import services.slickbacked.{EventTrackingRepository, SalesChannelRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.Scalaz._
 import scalaz._
 
-class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository,
+class Infos(infoService: InfoService, salesChannelRepository: SalesChannelRepository, eventTrackingRepository: EventTrackingRepository,
             internalEventProducer: ProtoEventProducer, val environment: Environment)
            (implicit val ec: ExecutionContext, val clock: Clock) extends Controller {
 
@@ -93,7 +92,7 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
       requestGroupId =    inGroupId.getOrElse(UUID.randomUUID.id[RequestGroupRef])
       body            <-  request.body.validate[BatchInfo]                                                       |> fromJsResult
       flowId          <-  request.flowId                                                                         |> fromHeaderParam
-      trackingId      <-  Future.successful(UUID.randomUUID().id[UpdateInfos])                                   |> fromFuture
+      trackingId      <-  eventTrackingRepository.createTracking(salesChannelId, Some(requestGroupId))           |> fromFuture
       bodyTransformed =   ProtoTransformer.toProto(flowId, body, salesChannelId)
       _               <-  internalEventProducer.send(requestGroupId.value.toString, bodyTransformed.toByteArray) |> fromFuture
     } yield Accepted(Json.toJson(UpdateInfos(trackingId)))
