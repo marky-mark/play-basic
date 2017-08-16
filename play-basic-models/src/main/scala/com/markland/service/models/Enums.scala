@@ -1,5 +1,7 @@
 package com.markland.service.models
 
+import api.service.models.BadValue
+
 import scala.util.{Either, Left, Right}
 
 trait EnumError {
@@ -38,6 +40,32 @@ object EnrichmentUpdateStatusStatusEnum {
     case Successful.name => Right(Successful)
     case Failed.name => Right(Failed)
     case _ => Left(BadValue(s"Unknown value '$name' for 'status' enum"))
+  }
+}
+
+object EnrichmentUpdateStatusResultEnum {
+  sealed trait Result extends NamedEnum
+
+  case object Inserted extends Result { override val name = "inserted" }
+  case object Updated extends Result { override val name = "updated" }
+  case object Missing extends Result { override val name = "missing" }
+  case object InputError extends Result { override val name = "input_error" }
+  case object AuthorizationError extends Result { override val name = "authorization_error" }
+  case object ForbiddenError extends Result { override val name = "forbidden_error" }
+  case object ValidationError extends Result { override val name = "validation_error" }
+  case object InternalError extends Result { override val name = "internal_error" }
+
+
+  def apply(name: String): Either[EnumError, Result] = name match {
+    case Inserted.name => Right(Inserted)
+    case Updated.name => Right(Updated)
+    case Missing.name => Right(Missing)
+    case InputError.name => Right(InputError)
+    case AuthorizationError.name => Right(AuthorizationError)
+    case ForbiddenError.name => Right(ForbiddenError)
+    case ValidationError.name => Right(ValidationError)
+    case InternalError.name => Right(InternalError)
+    case _ => Left(BadValue(s"Unknown value '$name' for 'result' enum"))
   }
 }
 
