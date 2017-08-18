@@ -1,7 +1,5 @@
 package com.markland.service.models
 
-import api.service.models.BadValue
-
 import scala.util.{Either, Left, Right}
 
 trait EnumError {
