@@ -1,24 +1,27 @@
 package services.events
 
+import java.util.UUID
+
 import akka.Done
 import akka.actor.ActorSystem
 import akka.kafka.ConsumerMessage.CommittableMessage
 import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
 import akka.stream.ActorMaterializer
-import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo}
+import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo, BatchInfoUpdateStatusResultEnum, BatchInfoUpdateStatusStatusEnum}
 import com.markland.service.tags.ids._
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.clients.consumer.{ConsumerConfig => KafkaConsumerConfig}
 import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
 import play.api.Logger
 import services.InfoService
+import services.slickbacked._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoService: InfoService)
+class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoService: InfoService, eventTrackingRepository: EventTrackingRepository)
                    (implicit ec: ExecutionContext, actorSystem: ActorSystem, actorMaterializer: ActorMaterializer) extends LazyLogging {
 
   val consumerSettings =
@@ -33,35 +36,49 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
     logger.info("Starting consumer")
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
-//      .throttle(1, 1.second, 1, ThrottleMode.shaping)
+      //      .throttle(1, 1.second, 1, ThrottleMode.shaping)
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
-      .map(il => il.map { case (sc, i) =>
-        logger.info(s"Mapped Sales Channel ${sc} Info ${i}")
-        (sc, i.map(info => info))
+      .map(il => il.map { case (sc, i, gid) =>
+        logger.info(s"Updating Sales Channel $sc Info $i")
+        infoService.batchUpdate(sc, i).map {
+          case Some(num) =>
+
+            logger.info(s"$num inserted")
+
+            num match {
+              case 0 => Left(FailedResult.apply(sc, Some(Operation.Insert()), gid, Stopped.updated()))
+              case n => Right(SuccessfulResult.apply(sc, gid, ResultType.Inserted, Operation.Insert()))
+            }
+          case None => Left(FailedResult.apply(sc, Some(Operation.Insert()), gid, Stopped.untrackedInternalError("No Idea")))
+        }
       })
-      //Note the last element does not get logged until another item gets entered from the source
-      .runForeach(_.map { case (sc, i) =>
-      logger.info(s"Inserting Sales Channel ${sc} Info ${i}")
-      infoService.batchUpdate(sc, i)
-    }
+      .runForeach(r => r.map( res => {
+        logger.info(s"Result is $res ")
 
+        res map {
+          case Right(s) => eventTrackingRepository.updateTracking(s.salesChannelId.value, s.groupId, BatchInfoUpdateStatusStatusEnum.Successful,
+            Some(BatchInfoUpdateStatusResultEnum.Inserted), None)
+          case Left(e) => eventTrackingRepository.updateTracking(e.salesChannelId.value, e.groupId, BatchInfoUpdateStatusStatusEnum.Failed,
+            Some(e.stopped.result), Some(e.stopped.problems))
+        }
+      })
     )
-//      .runWith(Sink.ignore)
+    //      .runWith(Sink.ignore)
   }
 
-  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]): Future[Option[(SalesChannelId, Seq[InternalInfo])]] =
+  private def handleEvent(commitableMessage: CommittableMessage[String, Array[Byte]]): Future[Option[(SalesChannelId, Seq[InternalInfo], UUID)]] =
 
-    Future[Option[(SalesChannelId, Seq[InternalInfo])]] {
+    Future[Option[(SalesChannelId, Seq[InternalInfo], UUID)]] {
 
-    val batchInfosproto: Option[BatchInfo] = safelyFromBytes(commitableMessage.record.value())
+      val batchInfosproto: Option[BatchInfo] = safelyFromBytes(commitableMessage.record.value())
 
-    batchInfosproto.map { b =>
-      val (flowId: Option[FlowId], batchInfo: InternalBatchInfo, salesChannelId: SalesChannelId)
-      = ProtoTransformer.fromProto(b)
-      (salesChannelId, batchInfo.data)
+      batchInfosproto.map { b =>
+        val (flowId: Option[FlowId], batchInfo: InternalBatchInfo, salesChannelId: SalesChannelId, gid: UUID)
+        = ProtoTransformer.fromProto(b)
+        (salesChannelId, batchInfo.data, gid)
+      }
+
     }
-
-  }
 
   private def safelyFromBytes[T](data: Array[Byte]): Option[BatchInfo] = {
     Try {

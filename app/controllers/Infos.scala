@@ -93,7 +93,7 @@ class Infos(infoService: InfoService, salesChannelRepository: SalesChannelReposi
       body            <-  request.body.validate[BatchInfo]                                                       |> fromJsResult
       flowId          <-  request.flowId                                                                         |> fromHeaderParam
       trackingId      <-  eventTrackingRepository.createTracking(salesChannelId, Some(requestGroupId))           |> fromFuture
-      bodyTransformed =   ProtoTransformer.toProto(flowId, body, salesChannelId)
+      bodyTransformed =   ProtoTransformer.toProto(flowId, body, salesChannelId, requestGroupId.value)
       _               <-  internalEventProducer.send(requestGroupId.value.toString, bodyTransformed.toByteArray) |> fromFuture
     } yield Accepted(Json.toJson(UpdateInfos(trackingId)))
 

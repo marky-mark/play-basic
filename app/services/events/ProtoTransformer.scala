@@ -15,15 +15,15 @@ import com.markland.service.refs.{FlowRef, SalesChannelRef}
 
 object ProtoTransformer extends LazyLogging {
 
-  def toProto(flowId: Option[FlowId], batchInfo: ModelBatchInfo, salesChannelId: SalesChannelId): BatchInfo = {
+  def toProto(flowId: Option[FlowId], batchInfo: ModelBatchInfo, salesChannelId: SalesChannelId, gid: UUID): BatchInfo = {
     val toproto: Seq[Info] = infosToproto(batchInfo.data)
     logger.info(s"Converting ${batchInfo.data} to ${toproto}")
-    services.events.BatchInfo(flowId.map(_.value).getOrElse(""), toproto, salesChannelId.value.toString)
+    services.events.BatchInfo(flowId.map(_.value).getOrElse(""), toproto, salesChannelId.value.toString, gid.toString)
   }
 
-  def fromProto(batchInfos : BatchInfo): (Option[FlowId], ModelBatchInfo, SalesChannelId) = {
+  def fromProto(batchInfos : BatchInfo): (Option[FlowId], ModelBatchInfo, SalesChannelId, UUID) = {
     (Some(batchInfos.flowId.id[FlowRef]), ModelBatchInfo(protosToInfos(batchInfos.info)),
-      UUID.fromString(batchInfos.salesChannelId).id[SalesChannelRef])
+      UUID.fromString(batchInfos.salesChannelId).id[SalesChannelRef], UUID.fromString(batchInfos.groupId))
   }
 
   private def infosToproto(infos: Seq[ModelInfo]): Seq[Info] = {

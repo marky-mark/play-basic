@@ -29,4 +29,5 @@ message BatchInfo {
     string flow_id = 1;
     repeated Info info = 2;
     string sales_channel_id = 3;
+    string group_id = 4;
 }

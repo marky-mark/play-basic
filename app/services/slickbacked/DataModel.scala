@@ -3,6 +3,7 @@ package services.slickbacked
 import java.sql.Timestamp
 import java.util.UUID
 
+import com.markland.service.tags.ids.SalesChannelId
 import play.api.libs.json.JsValue
 
 case class SalesChannelsSlick(salesChannelId: UUID, name: String)
@@ -14,6 +15,31 @@ case class InfoSlick(id: UUID,
                      lastModified: Timestamp,
                      salesChannelId: UUID,
                      status: String)
+
+sealed trait ResultType
+object ResultType {
+  case object Inserted extends ResultType
+  case object Updated extends ResultType
+  case object NoAction extends ResultType
+}
+
+case class SuccessfulResult(salesChannelId: SalesChannelId,
+                            groupId: UUID,
+                            result: ResultType,
+                            operation: Operation
+                           )
+
+sealed trait Operation { def name: String }
+object Operation {
+  case class  Upsert()   extends Operation { def name = "Upsert" }
+  case class  Insert()   extends Operation { def name = "Insert" }
+}
+
+case class FailedResult( salesChannelId: SalesChannelId,
+                         operation: Option[Operation],
+                         groupId: UUID,
+                        stopped: Stopped
+                       )
 
 class DataModel(val driver: ExtendedPostgresDriver) {
 

@@ -25,7 +25,7 @@ object InfoStatusEnum {
   }
 }
 
-object EnrichmentUpdateStatusStatusEnum {
+object BatchInfoUpdateStatusStatusEnum {
   sealed trait Status extends NamedEnum
 
   case object Pending extends Status { override val name = "pending" }
@@ -41,7 +41,7 @@ object EnrichmentUpdateStatusStatusEnum {
   }
 }
 
-object EnrichmentUpdateStatusResultEnum {
+object BatchInfoUpdateStatusResultEnum {
   sealed trait Result extends NamedEnum
 
   case object Inserted extends Result { override val name = "inserted" }

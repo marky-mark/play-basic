@@ -27,7 +27,7 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
     val flowId: FlowId = UUID.randomUUID().toString.id[FlowRef]
     val salesChannelId: UUID = UUID.fromString("9C9DD362-9581-43D2-B2E1-C9209A94B7E7")
     val protoBatch: BatchInfo = ProtoTransformer.toProto(Some(flowId), batchInfo,
-      salesChannelId.id[SalesChannelRef])
+      salesChannelId.id[SalesChannelRef], UUID.randomUUID())
 
     protoBatch.flowId should === (flowId.value)
     protoBatch.salesChannelId should === (salesChannelId.toString)
@@ -50,7 +50,7 @@ class ProtoTransformerSpec extends FlatSpec with Matchers {
     val batchInfo = ModelBatchInfo(Seq(testInfo))
     val flowId: FlowId = UUID.randomUUID().toString.id[FlowRef]
     val protoBatch: BatchInfo = ProtoTransformer.toProto(Some(flowId), batchInfo,
-      UUID.fromString("9C9DD362-9581-43D2-B2E1-C9209A94B7E7").id[SalesChannelRef])
+      UUID.fromString("9C9DD362-9581-43D2-B2E1-C9209A94B7E7").id[SalesChannelRef], UUID.randomUUID())
 
     protoBatch.flowId should === (flowId.value)
     protoBatch.info.size should === (1)

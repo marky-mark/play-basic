@@ -1,15 +1,17 @@
 package services.slickbacked
 
+import java.util.UUID
 import java.util.UUID.randomUUID
 
 import com.markland.service.Id._
-import com.markland.service.models.EnrichmentUpdateStatusStatusEnum._
-import com.markland.service.models.EnrichmentUpdateStatusResultEnum._
+import com.markland.service.models.BatchInfoUpdateStatusStatusEnum._
+import com.markland.service.models.BatchInfoUpdateStatusResultEnum._
 import com.markland.service.models.{Problem, UpdateInfos}
 import com.markland.service.tags.ids.{BatchUpdateId, RequestGroupId, SalesChannelId}
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.json.Json
 import services.slickbacked.FutureUtils._
+import com.markland.service.models.JsonOps._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,7 +19,8 @@ trait EventTrackingRepository {
   def createTracking(salesChannelId: SalesChannelId,
                      groupId: Option[RequestGroupId])(implicit ec: ExecutionContext): Future[BatchUpdateId]
 
-  def updateTracking(updateId: BatchUpdateId,
+  def updateTracking(salesChannelId: UUID,
+                     gid: UUID,
                      status: Status,
                      result: Option[Result],
                      problems: Option[Seq[Problem]])(implicit ec: ExecutionContext): Future[Int]
@@ -45,13 +48,14 @@ class EventTrackingRepositoryImpl(dbProvider: DatabaseProvider) extends EventTra
       .logOnFailure(ex => s"Failed to create Event Tracking entry: $ex")
   }
 
-  override def updateTracking(updateId: BatchUpdateId,
+  override def updateTracking(salesChannelId: UUID,
+                              gid: UUID,
                               status: Status,
                               result: Option[Result],
                               problems: Option[Seq[Problem]])(implicit ec: ExecutionContext): Future[Int] = {
 
     db.run {
-      dm.eventTrackings.filter(_.id === updateId.value)
+      dm.eventTrackings.filter(_.salesChannelId === salesChannelId).filter(_.groupId === gid)
         .map(row => (row.status, row.result, row.problems, row.updatedAt))
         .update((status.name, result.map(_.name), problems.map(Json.toJson(_)), Option(now)))
     }.logOnFailure(ex => s"Failed to update Event Tracking entry: $ex")

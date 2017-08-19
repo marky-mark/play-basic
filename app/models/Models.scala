@@ -32,6 +32,15 @@ object Models {
         trackingId = trackingId
       )
     }
+
+    def forbiddenProblem(detail: String, status: Int = Status.FORBIDDEN, trackingId: Option[TrackingId] = None) = {
+      Problem(
+        status = status,
+        title = "Forbidden",
+        detail = detail,
+        trackingId = trackingId
+      )
+    }
   }
 
   sealed trait ServiceErrorType
