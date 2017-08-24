@@ -4,7 +4,7 @@ import com.softwaremill.macwire._
 import play.api.Configuration
 import services.slickbacked.{EventTrackingRepositoryImpl, DatabaseProvider, InfoRepositoryImpl, SalesChannelRepositoryImpl}
 
-trait SlickBackedModule { self: MetricsModule =>
+trait SlickBackedModule { self: MetricsModule with CacheModule =>
 
   def configuration: Configuration
 

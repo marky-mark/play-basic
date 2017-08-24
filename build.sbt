@@ -102,6 +102,7 @@ lazy val root = (project in file("."))
     name := "play-basic",
     git.useGitDescribe := true,
     libraryDependencies ++= macwireDeps ++ playDep ++ playWsDep ++ Seq(
+      cache,
       "nl.grons" %% "metrics-scala" % "3.5.5_a2.3",
       "io.dropwizard.metrics" % "metrics-json" % "3.1.2",
       "io.dropwizard.metrics" % "metrics-jvm" % "3.1.2",
@@ -111,6 +112,8 @@ lazy val root = (project in file("."))
 
       "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
       "com.typesafe.akka" %% "akka-stream-kafka" % "0.13",
+
+      "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.0",
 
       "org.apache.kafka" %% "kafka" % "0.10.2.1" excludeAll (
 //        ExclusionRule(organization = "org.slf4j"),

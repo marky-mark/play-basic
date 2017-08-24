@@ -2,7 +2,7 @@ package services
 
 import java.util.UUID
 
-import services.slickbacked.{DBSpecIT, SalesChannelsSlick}
+import services.slickbacked.{SalesChannelRepositoryImpl, DBSpecIT, SalesChannelsSlick}
 
 import scala.concurrent.Await
 
@@ -21,8 +21,10 @@ class SalesChannelRepositorySpec extends DBSpecIT {
     val insert = dataModel.salesChannels += SalesChannelsSlick(salesChannel, "test")
     Await.ready(db.run(insert), waitDuration)
 
-    val sc = salesChannelRepository.exists(salesChannel)
-    sc.futureValue should === (Some(salesChannel))
+    eventually {
+      val sc = salesChannelRepository.exists(salesChannel)
+      sc.futureValue should === (Some(salesChannel))
+    }
   }
 
 }
