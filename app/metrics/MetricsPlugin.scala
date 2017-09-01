@@ -50,7 +50,8 @@ class MetricsPlugin(metricsConfig: MetricsConfig) extends DefaultInstrumented {
         "console" -> Reporter.console _,
         "csv" -> Reporter.csv _,
         "jmx" -> Reporter.jmx _,
-        "prometheus" -> Reporter.prometheus _
+        "prometheus" -> Reporter.prometheus _,
+        "cloudwatch" -> Reporter.cloudWatch _
       ).foreach {
         case (name, runReporter) =>
           conf.get(name).foreach { cfg =>

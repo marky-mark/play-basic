@@ -109,6 +109,7 @@ lazy val root = (project in file("."))
       "io.dropwizard.metrics" % "metrics-logback" % "3.1.2",
       "io.prometheus" % "simpleclient_dropwizard" % "0.0.23",
       "io.prometheus" % "simpleclient_common" % "0.0.23",
+      "com.blacklocus" % "metrics-cloudwatch" % "0.4.0",
 
       "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
       "com.typesafe.akka" %% "akka-stream-kafka" % "0.13",

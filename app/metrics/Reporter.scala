@@ -1,6 +1,7 @@
 package metrics
 
 import java.io.File
+import com.blacklocus.metrics.CloudWatchReporterBuilder
 import com.typesafe.scalalogging._
 import java.util.concurrent.TimeUnit
 
@@ -51,4 +52,20 @@ object Reporter extends LazyLogging {
   def jmx(conf: Config, registry: MetricRegistry): () => Any = {
     () => JmxReporter.forRegistry(registry).build().start()
   }
+
+  def cloudWatch(conf: Config, registry: MetricRegistry): () => Any = {
+    for {
+      unit <- Try(conf.getString("unit")).toOption
+      period <- Try(conf.getInt("period")).toOption
+      prefix <- Try(conf.getString("prefix")).toOption
+    } yield () => {
+      logger.info("Enabling CloudWatchReporter")
+
+      new CloudWatchReporterBuilder()
+        .withNamespace(prefix)
+        .withRegistry(registry)
+        .build()
+        .start(period, TimeUnit.valueOf(unit))
+    }
+  }.getOrElse(() => Unit)
 }
