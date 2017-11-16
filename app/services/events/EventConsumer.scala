@@ -8,6 +8,7 @@ import akka.kafka.ConsumerMessage.CommittableMessage
 import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.{Sink, Flow}
 import com.markland.service.models.{BatchInfo => InternalBatchInfo, Info => InternalInfo, BatchInfoUpdateStatusResultEnum, BatchInfoUpdateStatusStatusEnum}
 import com.markland.service.tags.ids._
 import com.typesafe.scalalogging.LazyLogging
@@ -32,14 +33,18 @@ class EventConsumer(internalConsumerConfig: InternalKafkaConsumerConfig, infoSer
       .withBootstrapServers(internalConsumerConfig.bootstrapServer)
       .withProperty(KafkaConsumerConfig.AUTO_OFFSET_RESET_CONFIG, internalConsumerConfig.autoOffsetRest)
 
+  def logOut = Flow[Option[(SalesChannelId, Seq[InternalInfo], UUID)]]
+      .map{ il => logger.info(s"Updating $il"); il}
+
   def run(): Future[Done] = {
-    logger.info("Starting consumer")
 
     Consumer.committableSource(consumerSettings, Subscriptions.topics(internalConsumerConfig.topic))
+      .log("Starting consumer")
       //      .throttle(1, 1.second, 1, ThrottleMode.shaping)
       .mapAsync(internalConsumerConfig.concurrency)(handleEvent)
+      .via(logOut)
       .map(il => il.map { case (sc, i, gid) =>
-        logger.info(s"Updating Sales Channel $sc Info $i")
+//        logger.info(s"Updating Sales Channel $sc Info $i")
         infoService.batchUpdate(sc, i).map {
           case Some(num) =>
 
