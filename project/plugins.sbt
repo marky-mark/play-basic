@@ -6,10 +6,10 @@ credentials += Credentials(Path.userHome / ".sbt" / ".bintrayCredentials")
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.10")
 
-addSbtPlugin("ie.zalando.buffalo" % "sbt-scm-source" % "0.0.5")
+addSbtPlugin("ie.zalando.buffalo" % "sbt-scm-source" % "0.0.8")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3")
 
-addSbtPlugin("com.tapad" % "sbt-docker-compose" % "1.0.24")
+addSbtPlugin("com.tapad" % "sbt-docker-compose" % "1.0.30")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
