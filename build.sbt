@@ -89,7 +89,7 @@ lazy val protoSettings = Seq(
   PB.protoSources in Compile := Seq(file("protobuf"))
 )
 
-val AkkaVersion             = "2.4.16"
+val AkkaVersion             = "2.4.18"
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, ScmSourcePlugin, GitVersioning, DockerPlugin, DockerComposePlugin)
@@ -112,7 +112,7 @@ lazy val root = (project in file("."))
       "com.blacklocus" % "metrics-cloudwatch" % "0.4.0",
 
       "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
-      "com.typesafe.akka" %% "akka-stream-kafka" % "0.13",
+      "com.typesafe.akka" %% "akka-stream-kafka" % "0.17",
 
       "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.0",
 
