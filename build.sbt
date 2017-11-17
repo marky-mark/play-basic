@@ -116,7 +116,7 @@ lazy val root = (project in file("."))
 
       "com.typesafe.play.modules" %% "play-modules-redis" % "2.4.0",
 
-      "org.apache.kafka" %% "kafka" % "0.10.2.1" excludeAll (
+      "org.apache.kafka" %% "kafka" % "1.0.0" excludeAll (
 //        ExclusionRule(organization = "org.slf4j"),
         ExclusionRule(organization = "com.sun.jdmk"),
         ExclusionRule(organization = "com.sun.jmx"),
