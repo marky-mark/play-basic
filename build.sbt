@@ -122,8 +122,8 @@ lazy val root = (project in file("."))
         ExclusionRule(organization = "com.sun.jmx"),
         ExclusionRule(organization = "javax.jms")),
 
-      "com.typesafe.slick" %% "slick" % "3.2.0",
-      "com.typesafe.slick" %% "slick-hikaricp" % "3.2.0",
+      "com.typesafe.slick" %% "slick" % "3.2.1",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1",
       "com.github.tminglei" % "slick-pg_2.11" % "0.15.0-RC",
       "com.github.tminglei" %% "slick-pg_play-json" % "0.15.0-RC" excludeAll ExclusionRule(organization = "com.typesafe.play"),
       "com.github.tminglei" % "slick-pg_date2_2.11" % "0.15.0-M2",
