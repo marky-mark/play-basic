@@ -15,7 +15,7 @@ val customItSettings = Defaults.itSettings ++ inConfig(IntegrationTest)(Seq(
 
 lazy val commonSettings = Seq(
   organization := "markland",
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.11.11",
 
   scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
