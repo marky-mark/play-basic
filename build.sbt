@@ -173,3 +173,5 @@ testDependenciesClasspath := {
   val testResources = (resources in IntegrationTest).value
   (fullClasspathCompile.files ++ classpathTestManaged.files ++ classpathTestUnmanaged.files ++ testResources).map(_.getAbsoluteFile).mkString(File.pathSeparator)
 }
+
+composeContainerPauseBeforeTestSeconds := 10
