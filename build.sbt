@@ -42,7 +42,8 @@ lazy val dockerSettings = Seq(
   dockerExposedPorts := Seq(9000),
   dockerExposedVolumes := Seq("/opt/docker/logs"),
   daemonUser := "root",
-  dockerImageCreationTask := (publishLocal in Docker).value
+  dockerImageCreationTask := (publishLocal in Docker).value,
+  dockerUpdateLatest := true
 )
 
 val MacwireVersion = "2.2.3"

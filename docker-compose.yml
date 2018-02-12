@@ -1,24 +1,23 @@
-version: '3.3'
+version: '3'
 
 services:
 
-  postgres-db:
+  db:
     image: postgres:9.4.4
     environment:
-      - POSTGRES_USER=playbasic
-      - POSTGRES_PASSWORD=playbasic
-      - POSTGRES_DB=playbasic
+      POSTGRES_USER: playbasic
+      POSTGRES_PASSWORD: playbasic
+      POSTGRES_DB: playbasic
     ports:
-      - "5432:5432"
+      - 5431:5432
 
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
-      - 2181:2181
+      - 2180:2181
 
   kafka:
     image: wurstmeister/kafka:1.0.0
-    hostname: kafka
     depends_on:
       - zookeeper
     environment:
@@ -27,28 +26,28 @@ services:
       KAFKA_CREATE_TOPICS: "internal-infos-events_v1:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     ports:
-      - 9092:9092
+      - 9091:9092
 
   schema:
       image: gsengun/flyway-postgres:1.4
-      command: ${DOCKER_IP} 5432 playbasic playbasic playbasic public
+      restart: always
+      command: db 5432 playbasic playbasic playbasic public
       volumes:
         - ./flyway/migration/postgres:/flyway/sql
       depends_on:
-        - postgres-db
+        - db
 
-  play-basic:
+  playbasic:
       # not supported by sbt docker compose
 #      build: ./target/docker/stage
-    image: markymark1/play-basic:0.2.0-36-gfc213c4-SNAPSHOT
+    image: markymark1/play-basic:latest
     depends_on:
       - schema
-      - postgres-db
+      - db
       - kafka
       - zookeeper
     environment:
-      - PostgresUrl=jdbc:postgresql://${DOCKER_IP}:5432/playbasic
-      - KafkaBootstrapServers=${DOCKER_IP}:9092
-    hostname: play-basic
+      PostgresUrl: jdbc:postgresql://db:5432/playbasic
+      KafkaBootstrapServers: kafka:9092
     ports:
       - 9000:9000

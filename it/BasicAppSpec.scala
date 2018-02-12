@@ -22,12 +22,12 @@ import Scalaz._
 class BasicAppSpec extends InfoSpec {
 
   val config: Config = ConfigFactory.load("application.it.conf")
-  val baseUrl = config.getString("url")
+  val endpoint = config.getString("external-services.info-client.base-url")
 
   it should "return OK for health check" in {
 
     eventually {
-      val output = Http(s"http://$baseUrl:9000/health").asString
+      val output = Http(s"$endpoint/health").asString
       output.isSuccess shouldBe true
     }
 
@@ -39,7 +39,7 @@ class BasicAppSpec extends InfoSpec {
 
     eventually {
       val infoToCreate = Json.toJson(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("foo"), status = InfoStatusEnum.Active)).toString()
-      val output: HttpResponse[String] = Http(s"http://$baseUrl:9000/api/sales-channels/$baseSalesChannelId/infos")
+      val output: HttpResponse[String] = Http(s"$endpoint/api/sales-channels/$baseSalesChannelId/infos")
         .postData(infoToCreate).asString
 
       output.code shouldBe 201
@@ -67,7 +67,7 @@ class BasicAppSpec extends InfoSpec {
 
       val res: Try[Either[ServiceError, Iterable[Info]]] = Await.ready(futureResult.toEither, Duration.Inf).value.get
 
-      println(s"FOOOO! $res")
+      println(s"Response returned! $res")
       res match {
         case Success(i) => i.isLeft shouldBe true; i match {
           case Left(in) => in.message shouldBe "Response code: 404. Reason: Not Found"
@@ -86,7 +86,7 @@ class BasicAppSpec extends InfoSpec {
       val infoSeq: Seq[Info] = Seq(new Info(name = "foo", data = dataJson.as[JsObject], meta = Seq("meta"), status = InfoStatusEnum.Active),
         new Info(name = "foo2", data = dataJson2.as[JsObject], meta = Seq("meta2"), status = InfoStatusEnum.Inactive))
       val infoToCreate = Json.toJson(new BatchInfo(infoSeq)).toString()
-      val output: HttpResponse[String] = Http(s"http://$baseUrl:9000/api/batch/sales-channels/$baseSalesChannelId/infos")
+      val output: HttpResponse[String] = Http(s"$endpoint/api/batch/sales-channels/$baseSalesChannelId/infos")
         .postData(infoToCreate).asString
 
       output.code shouldBe 202

@@ -10,6 +10,6 @@ addSbtPlugin("ie.zalando.buffalo" % "sbt-scm-source" % "0.0.8")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3")
 
-addSbtPlugin("com.tapad" % "sbt-docker-compose" % "1.0.30")
+addSbtPlugin("com.tapad" % "sbt-docker-compose" % "1.0.34")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")

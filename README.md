@@ -8,13 +8,10 @@ Basic Scala Api Application
 ### Docker Compose
 
 #### Prerequisites
-* Docker 9+
-* Docker compose
-* For Mac, Docker Machine and create a "default" machine
+* Docker for Mac (`brew cask install docker`)
+* (Docker compose should be installed already)[https://docs.docker.com/compose/install/#prerequisites]
 
-```bash
-export DOCKER_IP=$(docker-machine ip default)
-```
+#### Start
 
 Can start by using docker compose, but the issue here is that the schema might not be applied. This is due to the limitations of docker compose not waiting for the db to be up applying flyway.
 
@@ -22,10 +19,20 @@ Can start by using docker compose, but the issue here is that the schema might n
 docker-compose up
 ```
 
-Alternatively use
+Alternatively use (SBT Docker Compose Plugin)[https://github.com/Tapad/sbt-docker-compose]
 
 ```bash
 sbt dockerComposeUp
+```
+
+#### Stop
+
+```bash
+docker-compose down --volumes
+```
+
+```bash
+sbt dockerComposeStop
 ```
 
 ### Starting Manually
@@ -33,8 +40,7 @@ sbt dockerComposeUp
 #### Prerequisites
 
 * Postgres 9.4+
-* Follow [flyway instructions](https://github.com/marky-mark/play-basic/tree/master/flyway) 
-
+* Follow [flyway instructions to install schema](https://github.com/marky-mark/play-basic/tree/master/flyway) 
 
 ```bash
 sbt run
@@ -50,57 +56,70 @@ If the integration tests are broken and you want to debug [see here](https://git
 
 ### Generate Swagger Json
 
+* TODO: Create SBT Plugin
+
 ```bash
 brew install swagger-codegen
 swagger-codegen generate -i swagger/api.yaml -l swagger -o public/
 ```
 
-### Docker
+### Some Useful Docker Commands
 
-Clear out old docker images
+#### Clear out old docker images
 
 ```bash
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc) 
-```
-
-Clear out the exited containers
-
-```bash
-docker rm -v $(docker ps -a -q -f status=exited)
-```
-
-List docker images
-
-```bash
-docker images -a
-```
-
-List docker containers
-
-```bash
-docker ps -a
 ```
 
 ```
 docker system prune
 ```
 
-
-### Jenkins 
-
 ```
-buildDescription(".*\\[info\\] Built image markymark1/play-basic:(.*)")
+docker images prune
 ```
 
- Jenkins Job DSL plugin is used to for job creation
+#### Clear out the exited containers
 
-* Create the *seed job* on jenkins which clones this repo and has a *Process Job DSL* step which loads the `jenkins/jobs.groovy` DSL script
+```bash
+docker rm -v $(docker ps -a -q -f status=exited)
+```
 
-* Any changes made to `jobs.groovy` will require 'Build Now' to be run on the seed job
+#### List docker images
+
+```bash
+docker images -a
+```
+
+#### List docker containers
+
+```bash
+docker ps -a
+```
+
+#### Docker Volume
+
+```
+docker volume ls
+```
+
+```
+docker volume prune
+```
+
+#### Docker network
+
+```
+docker network ls
+```
+
+```
+docker inspect <NETWORK_HASH>
+```
 
 ### Test Coverage
 
-Bit unsure, it tests aren't covered
+Investigate if IT tests are covered as part of it.
 
 https://github.com/scoverage/sbt-scoverage
 
