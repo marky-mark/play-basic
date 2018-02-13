@@ -137,8 +137,7 @@ lazy val root = (project in file("."))
       "info.batey.kafka" % "kafka-unit" % "0.6" % "test",
       "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
       "org.mockito" % "mockito-core" % "2.3.7" % "test,it",
-      "com.h2database" % "h2" % "1.4.187" % "test",
-      "org.flywaydb" %% "flyway-play" % "3.0.1" % "test,it",
+      "org.flywaydb" %% "flyway-play" % "4.0.0" % "test,it",
       "io.rest-assured" % "rest-assured" % "3.0.3" % "it",
       "org.scalaj" %% "scalaj-http" % "2.2.1" % "it"
     ),
