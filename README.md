@@ -124,3 +124,11 @@ Investigate if IT tests are covered as part of it.
 https://github.com/scoverage/sbt-scoverage
 
 ```sbt coverage test dockerComposeTest coverageReport```
+
+### TODO - Upgrades
+
+* Play 2.6
+* Akka 2.5
+* SBT 1.X
+* Scala 2.12
+* codahale 4.X
