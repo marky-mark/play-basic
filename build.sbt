@@ -46,7 +46,7 @@ lazy val dockerSettings = Seq(
   dockerUpdateLatest := true
 )
 
-val MacwireVersion = "2.2.3"
+val MacwireVersion = "2.3.0"
 lazy val macwireDeps = Seq(
   "com.softwaremill.macwire" %% "macros" % MacwireVersion % "provided",
   "com.softwaremill.macwire" %% "util" % MacwireVersion,
