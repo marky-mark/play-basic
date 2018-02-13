@@ -129,7 +129,7 @@ lazy val root = (project in file("."))
       "com.github.tminglei" %% "slick-pg_play-json" % "0.15.7" excludeAll ExclusionRule(organization = "com.typesafe.play"),
 
       "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
-      "org.webjars" % "swagger-ui" % "2.2.5",
+      "org.webjars" % "swagger-ui" % "2.2.10-1",
       "org.scalaz" %% "scalaz-core" % "7.2.2",
 
       "com.google.code.findbugs" % "jsr305" % "2.0.3",
